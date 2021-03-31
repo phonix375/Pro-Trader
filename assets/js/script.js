@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
     $.ajax({
         type: "GET",
@@ -6,6 +7,13 @@ $(document).ready(function() {
         success: function(data) {processData(data);}
      });
 });
+
+var createDropDown = function(lines){
+    console.log(lines);
+    lines.forEach(element => {
+        $('#selector').append(`<option value="${element[0]}">${element[0]}</option>`)
+    });
+}
 
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
@@ -23,11 +31,8 @@ function processData(allText) {
             lines.push(tarr);
         }
     }
-    console.log(lines);
+    createDropDown(lines);
 }
-
-var lines = [];
-
 
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
@@ -56,3 +61,7 @@ var myChart = new Chart(ctx, {
         }
     }
 });
+
+
+
+selector
