@@ -1,4 +1,5 @@
 var userInformation = '';
+var apiKey = 'MRZGIXHX6J4WPIDJ';
 
 $(document).ready(function() {
     $.ajax({
@@ -81,5 +82,54 @@ var checkIfUserExist = function(){
        console.log(userInformation) ;
     }
 }
+$('#symbolSearch').submit(function (e) { 
+    e.preventDefault();
+    var serchSymbl = $('#symbolToSearch').val();
+    console.log(serchSymbl);
+    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${serchSymbl}&apikey=${apiKey}`)
+  .then(response => response.json())
+  .then(function(data){
+      var searchResault = []
+      data.bestMatches.forEach(element => {
+        searchResault.push(element['1. symbol']);
+      });
+      console.log(searchResault);
+      $('#searchResults').html('');
+      var table = $('<table>').attr('class','results')
+      searchResault.forEach(function(element){
+        var tableRow = $('<tr>');
+        var data = $('<td>').text(element);
+         $(tableRow).append(data);
+         $(table).append(tableRow);
+      });
+      $('#searchResults').append(table);
+  });
+});
+
+/*
+ <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Symbol</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Worth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                       <td>APPL</td>
+                       <td>1</td>
+                       <td>300$</td>
+                </tr>
+     </tbody>
+</table>
+*/
+
+
+
+
+
 
 checkIfUserExist();
