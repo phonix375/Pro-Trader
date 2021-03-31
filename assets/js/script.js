@@ -85,21 +85,21 @@ var checkIfUserExist = function(){
 $('#symbolSearch').submit(function (e) { 
     e.preventDefault();
     var serchSymbl = $('#symbolToSearch').val();
-    console.log(serchSymbl);
     fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${serchSymbl}&apikey=${apiKey}`)
   .then(response => response.json())
   .then(function(data){
       var searchResault = []
       data.bestMatches.forEach(element => {
-        searchResault.push(element['1. symbol']);
+        searchResault.push([element['1. symbol'],element['2. name']]);
       });
-      console.log(searchResault);
       $('#searchResults').html('');
       var table = $('<table>').attr('class','results')
       searchResault.forEach(function(element){
         var tableRow = $('<tr>');
-        var data = $('<td>').text(element);
+        var data = $('<td>').text(element[0]);
+        var data1 = $('<td>').text(element[1]);
          $(tableRow).append(data);
+         $(tableRow).append(data1);
          $(table).append(tableRow);
       });
       $('#searchResults').append(table);
