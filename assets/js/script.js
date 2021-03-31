@@ -36,7 +36,7 @@ var myChart = new Chart(ctx, {
     data: {
         labels: ['30/03/2021', '29/03/2021', '28/03/2021', '27/03/2021', '26/03/2021', '25/03/2021'],
         datasets: [{
-            label: 'My Protpholio worth',
+            label: 'My Portfolio worth',
             data: [10000, 11500, 12000, 9800, 9900, 16000],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)'
