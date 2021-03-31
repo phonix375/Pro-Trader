@@ -118,7 +118,7 @@
 
     </div>
     
-     <!--buy stock modal-->
+    <!--sell stock modal-->
     <div class="modal fade" id="sellModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,10 +130,20 @@
                       <!--sell form-->
                       <form id="sellForm">
                         <div class="mb-3">
-                          <label for="stocksList" class="form-label">Select the stock you want to sell</label>
-                          <input type="text" class="form-control" id="stocksList"/>
+                            <form id="stocksDropdown">
+                                <div class="form-row align-items-center">
+                                  <div class="col-auto my-1">
+                                    <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                      <option selected>Choose the stock you want to sell...</option>
+                                      <option value="1">One</option>
+                                      <option value="2">Two</option>
+                                      <option value="3">Three</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </form>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 col-4">
                           <label for="sellQuantity" class="form-label">Quantity</label>
                           <input type="number" class="form-control" id="sellQuantity">
                         </div>
