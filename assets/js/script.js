@@ -1,3 +1,5 @@
+var userInformation = '';
+
 $(document).ready(function() {
     $.ajax({
         type: "GET",
@@ -28,7 +30,6 @@ function processData(allText) {
 
 var lines = [];
 
-
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
@@ -56,3 +57,29 @@ var myChart = new Chart(ctx, {
         }
     }
 });
+
+var saveToLocalStorage = function(){
+    localStorage.setItem('userInformation',JSON.stringify(userInformation));
+}
+
+
+var checkIfUserExist = function(){
+    userInformation = localStorage.getItem('userInformation');
+    if(localStorage.getItem('userInformation') == null){
+        var username = window.prompt("Please enter your name");
+        var startCash = window.prompt("Please enter the start cash");
+        userInformation = {
+            username: username,
+            ownStocks : [],
+            cash : startCash
+        };
+        saveToLocalStorage();
+    }
+    else{
+       
+       userInformation = JSON.parse(localStorage.getItem('userInformation'));
+       console.log(userInformation) ;
+    }
+}
+
+checkIfUserExist();
