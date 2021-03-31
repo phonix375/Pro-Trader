@@ -106,30 +106,4 @@ $('#symbolSearch').submit(function (e) {
   });
 });
 
-/*
- <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Symbol</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Worth</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                       <td>APPL</td>
-                       <td>1</td>
-                       <td>300$</td>
-                </tr>
-     </tbody>
-</table>
-*/
-
-
-
-
-
-
 checkIfUserExist();
