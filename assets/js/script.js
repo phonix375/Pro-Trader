@@ -1,3 +1,4 @@
+var userInformation = '';
 
 $(document).ready(function() {
     $.ajax({
@@ -34,13 +35,15 @@ function processData(allText) {
     createDropDown(lines);
 }
 
+var lines = [];
+
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: ['30/03/2021', '29/03/2021', '28/03/2021', '27/03/2021', '26/03/2021', '25/03/2021'],
         datasets: [{
-            label: 'My Protpholio worth',
+            label: 'My Portfolio worth',
             data: [10000, 11500, 12000, 9800, 9900, 16000],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)'
@@ -62,6 +65,28 @@ var myChart = new Chart(ctx, {
     }
 });
 
+var saveToLocalStorage = function(){
+    localStorage.setItem('userInformation',JSON.stringify(userInformation));
+}
 
 
-selector
+var checkIfUserExist = function(){
+    userInformation = localStorage.getItem('userInformation');
+    if(localStorage.getItem('userInformation') == null){
+        var username = window.prompt("Please enter your name");
+        var startCash = window.prompt("Please enter the start cash");
+        userInformation = {
+            username: username,
+            ownStocks : [],
+            cash : startCash
+        };
+        saveToLocalStorage();
+    }
+    else{
+       
+       userInformation = JSON.parse(localStorage.getItem('userInformation'));
+       console.log(userInformation) ;
+    }
+}
+
+checkIfUserExist();
