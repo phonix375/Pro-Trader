@@ -111,6 +111,20 @@ $('#buyForm').submit(function(e){
     var symbolToBuy = $('#symbolToBuy').val();
     var buyQuantity = $('#buyQuantity').val();
     console.log(symbolToBuy, buyQuantity);
+    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey}`)
+    .then(response => response.json())
+    .then(function(data){
+        console.log(data);
+        if(Object.keys(data['Global Quote']).length == 0){
+            alert('we didnt find this symble, please try again');
+        }
+        else if((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash){
+            alert('sorry you dont have the money for this');
+        }
+        else{
+            console.log('this is else');
+        }
+    });
 
 })
 
