@@ -76,10 +76,22 @@ var checkIfUserExist = function(){
         saveToLocalStorage();
     }
     else{
-       
        userInformation = JSON.parse(localStorage.getItem('userInformation'));
        console.log(userInformation) ;
     }
 }
 
+/*Sell functions*/
+
+//get the array of the Stocks owned by the user from Local Storage and display in Sell Modal
+var getArrayStocks = function(){
+    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
+    var ownedStocks = userInformation.ownStocks
+    for(var i = 0; i < ownedStocks.length ; i++){
+        $("#inlineFormCustomSelect").append(`<option value="${ownedStocks[i]}">${ownedStocks[i]}</option>`)
+    }
+}
+
+
 checkIfUserExist();
+getArrayStocks()
