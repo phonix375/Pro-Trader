@@ -38,7 +38,26 @@ var updateStockTotal = function(){
     var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
     $('#total').text(total);
 }
+var checkIfUserExist = function(){
+    userInformation = localStorage.getItem('userInformation');
+    if(localStorage.getItem('userInformation') == null){
+        var username = window.prompt("Please enter your name");
+        var startCash = window.prompt("Please enter the start cash");
+        userInformation = {
+            username: username,
+            ownStocks : [],
+            cash : startCash,
+            transactions : [],
+            startInformation:[moment().format('DD/MM/YYYY'),startCash]
 
+        };
+        saveToLocalStorage();
+    }
+    else{
+       
+       userInformation = JSON.parse(localStorage.getItem('userInformation'));
+    }
+}
 var updateDashbord = function(){
     $('#myStocksTable').html('');
     document.querySelector('.currentCash').innerHTML = userInformation['cash'].toFixed(2);
@@ -95,26 +114,7 @@ var saveToLocalStorage = function(){
 }
 
 
-var checkIfUserExist = function(){
-    userInformation = localStorage.getItem('userInformation');
-    if(localStorage.getItem('userInformation') == null){
-        var username = window.prompt("Please enter your name");
-        var startCash = window.prompt("Please enter the start cash");
-        userInformation = {
-            username: username,
-            ownStocks : [],
-            cash : startCash,
-            transactions : [],
-            startInformation:[moment().format('DD/MM/YYYY'),startCash]
 
-        };
-        saveToLocalStorage();
-    }
-    else{
-       
-       userInformation = JSON.parse(localStorage.getItem('userInformation'));
-    }
-}
 
 $('#symbolSearch').submit(function (e) { 
     e.preventDefault();
