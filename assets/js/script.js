@@ -88,10 +88,31 @@ var getArrayStocks = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
     for(var i = 0; i < ownedStocks.length ; i++){
-        $("#inlineFormCustomSelect").append(`<option value="${ownedStocks[i]}">${ownedStocks[i]}</option>`)
+        $("#inlineFormCustomSelect").append(`<option id="${ownedStocks[i].symbol}" value="${ownedStocks[i].symbol}">${ownedStocks[i].symbol}</option>`)
     }
 }
 
+var updateMainTableSell = function(){
+    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
+    var ownedStocks = userInformation.ownStocks
+    for(var i = 0; i < ownedStocks.length ; i++){
+       if(ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity == $("#sellQuantity").val() ){
+            userInformation.ownStocks.splice(i,1)
+        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity > $("#sellQuantity").val()){
+            userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - $("#sellQuantity").val()
+        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
+            $("#sellErrorMessage").css("display","flex")
+            $("#sellErrorMessage").css("color","red")
+            $("#sellErrorMessage").fadeOut(4000);
+        }
+    }
+    localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
+   
+}
 
 checkIfUserExist();
 getArrayStocks()
+
+$("#sellBtn").on("click",function(){
+    updateMainTableSell()
+})
