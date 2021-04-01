@@ -60,7 +60,7 @@ var checkIfUserExist = function(){
 }
 var updateDashbord = function(){
     $('#myStocksTable').html('');
-    document.querySelector('.currentCash').innerHTML = userInformation['cash'].toFixed(2);
+    document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
     $('#userName').html(userInformation.username);
     userInformation.ownStocks.forEach( async function(element){
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
