@@ -60,6 +60,7 @@ var myChart = new Chart(ctx, {
 });
 
 var saveToLocalStorage = function(){
+    console.log('going to save function');
     localStorage.setItem('userInformation',JSON.stringify(userInformation));
 }
 
@@ -120,9 +121,36 @@ $('#buyForm').submit(function(e){
         }
         else if((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash){
             alert('sorry you dont have the money for this');
+            console.log(data['Global Quote']['05. price'] * buyQuantity);
+            console.log(userInformation.cash)
         }
         else{
-            console.log('this is else');
+            //reduce the cash from the user account
+            userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
+
+            //checking to make sure if the user have this stock
+            var checkIfOwn = userInformation.ownStocks.find(a => a.symbol === symbolToBuy);
+            console.log(checkIfOwn);
+            //add to the array if the user dont have this stock
+            if(checkIfOwn == null){
+                userInformation.ownStocks.push({"symbol":symbolToBuy,"quantity":buyQuantity});
+
+            }
+            //if the user have this stock, loop over the array and increment the quantity
+            else{
+                for(var i = 0; i< userInformation.ownStocks.length;i++){
+                    if(userInformation.ownStocks[i]['symbol'] == symbolToBuy){
+                        console.log('here');
+                        console.log(parseInt(userInformation.ownStocks[i]['quantity']),parseInt(buyQuantity));
+                        var temp = parseInt(userInformation.ownStocks[i]['quantity']) + parseInt(buyQuantity);
+                        console.log(temp);
+                        userInformation.ownStocks[i]['quantity'] = '';
+                        userInformation.ownStocks[i]['quantity'] = temp;
+                    }
+                }
+            };
+            //save the changes to local storage
+            saveToLocalStorage();
         }
     });
 
