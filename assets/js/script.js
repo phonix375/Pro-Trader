@@ -32,7 +32,7 @@ function processData(allText) {
 var lines = [];
 
 var updateStockTotal = function(){
-    $('#stockWorth').text(stockWorth);
+    $('#stockWorth').text(stockWorth.toFixed(2));
     console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
     console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
     var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
@@ -40,38 +40,26 @@ var updateStockTotal = function(){
 }
 
 var updateDashbord = function(){
+    $('#myStocksTable').html('');
     document.querySelector('.currentCash').innerHTML = userInformation['cash'].toFixed(2);
     $('#userName').html(userInformation.username);
     userInformation.ownStocks.forEach( async function(element){
-        var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo`);
+        var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
         var json = await response.json();
         console.log(json);
         stockWorth += json['Global Quote']['05. price'] * element.quantity;
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${stockWorth}`);
+        var td2 = $('<td>').html(`${stockWorth.toFixed(2)}$`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
         $('#myStocksTable').append(tableRow);
 
         updateStockTotal(element);
-/*
-        <tr>
-            <th scope="row">1</th>
-            <td>APPL</td>
-            <td>1</td>
-            <td>300$</td>
-        </tr>
-
-*/
-
     });
 
-    
-    
-    
  };
 
 var ctx = document.getElementById('myChart').getContext('2d');
@@ -196,9 +184,7 @@ $('#buyForm').submit(function(e){
         }
     });
 
-})
-
-
+});
 
 checkIfUserExist();
 updateDashbord();
