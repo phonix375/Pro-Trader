@@ -41,11 +41,32 @@ var updateStockTotal = function(){
 
 var updateDashbord = function(){
     document.querySelector('.currentCash').innerHTML = userInformation['cash'].toFixed(2);
+    $('#userName').html(userInformation.username);
     userInformation.ownStocks.forEach( async function(element){
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo`);
         var json = await response.json();
+        console.log(json);
         stockWorth += json['Global Quote']['05. price'] * element.quantity;
-        updateStockTotal();
+        var tableRow = $("<tr>");
+        var td = $('<td>').html(`${element['symbol']}`);
+        var td1 = $('<td>').html(`${element.quantity}`);
+        var td2 = $('<td>').html(`${stockWorth}`);
+        $(tableRow).append(td);
+        $(tableRow).append(td1);
+        $(tableRow).append(td2);
+        $('#myStocksTable').append(tableRow);
+
+        updateStockTotal(element);
+/*
+        <tr>
+            <th scope="row">1</th>
+            <td>APPL</td>
+            <td>1</td>
+            <td>300$</td>
+        </tr>
+
+*/
+
     });
 
     
