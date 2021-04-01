@@ -21,7 +21,9 @@
             <div class="col-2 text-cente bg-dark text-light p-4 p-lg-3 ">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" id="buyBtn">Buy</a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buyModal">
+                            Buy
+                        </button>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="sellBtn">Sell</a>
@@ -37,9 +39,9 @@
             <div class="col-10">
                 <div class="row">
                     <div class="row m-5">
-                        <div class="col">Cash: 10,000$</div>
-                        <div class="col">YOUR STOCK WORTH: <span id="stockWorth">300$</span></div>
-                        <div class="col">TOTAL: <span id="total">13,000$</span></div>
+                        <div class="col">Cash: <span class="currentCash"></span>USD</div>
+                        <div class="col">YOUR STOCK WORTH: <span id="stockWorth"></span> USD</div>
+                        <div class="col">TOTAL: <span id="total"></span> USD</div>
                         <div class="col">
                             <div class="col">User Name: <span id="userName">someName</span></div>
                             <div class="col">Change currency</div>
@@ -58,19 +60,13 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">#</th>
                                             <th scope="col">Symbol</th>
                                             <th scope="col">Quantity</th>
                                             <th scope="col">Worth</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>APPL</td>
-                                            <td>1</td>
-                                            <td>300$</td>
-                                        </tr>
+                                    <tbody id="myStocksTable">
+
                                     </tbody>
                                 </table>
                             </div>
@@ -114,25 +110,64 @@
         </div>
 
     </div>
+    <!--all modals-->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-        crossorigin="anonymous"></script>
+    <!--buy stock modal-->
+    <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Buy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="symbolSearch">
+                        <div class="mb-3">
+                            <label for="symbolToSearch" class="form-label">Search For Symbol</label>
+                            <input type="text" class="form-control" id="symbolToSearch">
+                            <button type="submit" class="btn btn-primary mt-3 mb-3">Search</button>
+                    </form>
+                    <div id="searchResults"></div>
+                    <!--buy form-->
+                    <form id="buyForm">
+                        <div class="mb-3">
+                            <label for="symbolToBuy" class="form-label">Symbel</label>
+                            <input type="text" class="form-control" id="symbolToBuy"
+                                placeholder="type a symble you want to buy">
+                            <div class="form-text">You can serach for a symbel on the top</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="buyQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="buyQuantity">
+                        </div>
+                        <button type="submit" class="btn btn-primary">BUY</button>
+                    </form>
+                    <!--end of buy form-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
-        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
-        crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+            crossorigin="anonymous"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
-        integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
-        integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
-        crossorigin="anonymous"></script>
-    <script src="./assets/js/script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+            integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+            crossorigin="anonymous"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
+            integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
+            integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
+            crossorigin="anonymous"></script>
+        <script src="./assets/js/script.js"></script>
 </body>
 
 </html>
