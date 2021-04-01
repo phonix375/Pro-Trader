@@ -21,7 +21,9 @@
             <div class="col-2 text-cente bg-dark text-light p-4 p-lg-3 ">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" id="buyBtn">Buy</a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buyModal">
+                            Buy
+                          </button>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="sellBtn">Sell</a>
@@ -116,6 +118,44 @@
             <!--end of main-->
         </div>
 
+    </div>
+    <!--all modals-->
+
+    <!--buy stock modal-->
+    <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Buy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="symbolSearch">
+                        <div class="mb-3">
+                          <label for="symbolToSearch" class="form-label">Search For Symbol</label>
+                          <input type="text" class="form-control" id="symbolToSearch">
+                        <button type="submit" class="btn btn-primary mt-3 mb-3">Search</button>
+                      </form>
+                      <div id="searchResults"></div>
+                      <!--buy form-->
+                      <form id="buyForm">
+                        <div class="mb-3">
+                          <label for="symbolToBuy" class="form-label">Symbel</label>
+                          <input type="text" class="form-control" id="symbolToBuy" placeholder="type a symble you want to buy">
+                          <div class="form-text">You can serach for a symbel on the top</div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="buyQuantity" class="form-label">Quantity</label>
+                          <input type="number" class="form-control" id="buyQuantity">
+                        </div>
+                        <button type="submit" class="btn btn-primary">BUY</button>
+                      </form>
+                    <!--end of buy form-->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
