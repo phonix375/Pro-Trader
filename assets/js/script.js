@@ -149,10 +149,26 @@ var availableStocksToSell = function(){
 var updateMainTableSell = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
+    const sellStockSymbol = $("option:selected").val()
+    const sellStockQuantity = $("#sellQuantity").val()
     //Update the local storage object after selling the product
     for(var i = 0; i < ownedStocks.length ; i++){
-       if(ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity == $("#sellQuantity").val() ){
+       if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
             userInformation.ownStocks.splice(i,1)
+            //Substract the sell worth from the total stock worth and total
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
+            fetch(url)
+            .then(response => response.json())
+            .then(function(data){
+                const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
+                //Substract the sell amount from total stock worth
+                stockWorth-= priceSellStock*sellStockQuantity
+                $("#stockWorth").text(stockWorth)
+                //Substract the sell amount from total
+                currentTotal = parseFloat($("#total").text())
+                newTotal= currentTotal - priceSellStock*sellStockQuantity
+                $("#total").text(newTotal)
+            })
         } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity > $("#sellQuantity").val()){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - $("#sellQuantity").val()
         } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
@@ -166,11 +182,8 @@ var updateMainTableSell = function(){
     //Update Table with current price for each share owned
         //Call the updated userInformation object
     var newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
-    console.log(newUserInformation)
-   
         //Clear the current table
     $("#myStocksTable").empty()
-    $("#stockWorth").empty()
         //Loop through the array of stocks owned and add a new row to the table with corresponding data
     for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
         const stockSymbol = newUserInformation.ownStocks[i].symbol
@@ -187,13 +200,8 @@ var updateMainTableSell = function(){
                     <td>${stockQuantity}</td>
                     <td>${stockPrice*stockQuantity}$</td>
                 </tr>`)
-
-            //Update the stock worth total
-            stockWorth-=stockPrice*stockQuantity      
         })  
     }
-
-    $("#stockWorth").text(stockWorth)
 }
 
 $("#sellBtn").on("click",function(){
