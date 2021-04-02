@@ -187,7 +187,7 @@ var updateTableAfterSell = function(newUserInformation){
 }
 
 //update local storage and update table
-var updateMainTableSell = function(){
+var mainSellFunction = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
     const sellStockSymbol = $("option:selected").val()
@@ -219,7 +219,7 @@ var updateMainTableSell = function(){
 }
 
 $("#sellBtn").on("click",function(){
-    updateMainTableSell()
+    mainSellFunction()
 })
 
 /*end of Sell functions*/
