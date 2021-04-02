@@ -199,6 +199,8 @@ var mainSellFunction = function(){
             localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
             //Substract the sell worth from the total stock worth and total
             substractSellInStockTotal(sellStockSymbol, sellStockQuantity)
+            //Remove the option from the select menu for the symbol that has been totally sold
+            $("#"+sellStockSymbol).remove()
             const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
             updateTableAfterSell(newUserInformation) 
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
