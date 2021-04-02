@@ -209,7 +209,7 @@ var mainSellFunction = function(){
             //Call the updated userInformation object
             const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
             updateTableAfterSell(newUserInformation) 
-        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
+        } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity < sellStockQuantity) {
             $("#sellErrorMessage").css("display","flex")
             $("#sellErrorMessage").css("color","red")
             $("#sellErrorMessage").fadeOut(4000);
