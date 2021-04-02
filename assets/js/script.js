@@ -146,7 +146,7 @@ var availableStocksToSell = function(){
 }
 
 //Substract the sell worth from the total stock worth and total
-var fetchPriceForTheSymbolSold = function(sellStockSymbol, sellStockQuantity){
+var substractSellInStockTotal = function(sellStockSymbol, sellStockQuantity){
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
     fetch(url)
     .then(response => response.json())
@@ -198,14 +198,14 @@ var updateMainTableSell = function(){
             userInformation.ownStocks.splice(i,1)
             localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
             //Substract the sell worth from the total stock worth and total
-            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
+            substractSellInStockTotal(sellStockSymbol, sellStockQuantity)
             const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
             updateTableAfterSell(newUserInformation) 
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
             localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
             //Substract the sell worth from the total stock worth and total
-            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
+            substractSellInStockTotal(sellStockSymbol, sellStockQuantity)
             //Call the updated userInformation object
             const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
             updateTableAfterSell(newUserInformation) 
