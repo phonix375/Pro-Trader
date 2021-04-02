@@ -162,36 +162,11 @@ var fetchPriceForTheSymbolSold = function(sellStockSymbol, sellStockQuantity){
     })
 }
 
-//update local storage and update table
-var updateMainTableSell = function(){
-    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
-    var ownedStocks = userInformation.ownStocks
-    const sellStockSymbol = $("option:selected").val()
-    const sellStockQuantity = $("#sellQuantity").val()
-    //Update the local storage object after selling the product
-    for(var i = 0; i < ownedStocks.length ; i++){
-       if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
-            userInformation.ownStocks.splice(i,1)
-            //Substract the sell worth from the total stock worth and total
-            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
-        } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
-            userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
-            //Substract the sell worth from the total stock worth and total
-            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
-        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
-            $("#sellErrorMessage").css("display","flex")
-            $("#sellErrorMessage").css("color","red")
-            $("#sellErrorMessage").fadeOut(4000);
-        }
-    }
-    localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
-    
-    //Update Table with current price for each share owned
-        //Call the updated userInformation object
-    var newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
-        //Clear the current table
+//Update Table with current price for each share owned
+var updateTableAfterSell = function(newUserInformation){
+    //Clear the current table
     $("#myStocksTable").empty()
-        //Loop through the array of stocks owned and add a new row to the table with corresponding data
+    //Loop through the array of stocks owned and add a new row to the table with corresponding data
     for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
         const stockSymbol = newUserInformation.ownStocks[i].symbol
         const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity)
@@ -209,6 +184,38 @@ var updateMainTableSell = function(){
                 </tr>`)
         })  
     }
+}
+
+//update local storage and update table
+var updateMainTableSell = function(){
+    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
+    var ownedStocks = userInformation.ownStocks
+    const sellStockSymbol = $("option:selected").val()
+    const sellStockQuantity = $("#sellQuantity").val()
+    //Update the local storage object after selling the product
+    for(var i = 0; i < ownedStocks.length ; i++){
+       if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
+            userInformation.ownStocks.splice(i,1)
+            localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
+            //Substract the sell worth from the total stock worth and total
+            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
+            const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
+            updateTableAfterSell(newUserInformation) 
+        } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
+            userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
+            localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
+            //Substract the sell worth from the total stock worth and total
+            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
+            //Call the updated userInformation object
+            const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
+            updateTableAfterSell(newUserInformation) 
+        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
+            $("#sellErrorMessage").css("display","flex")
+            $("#sellErrorMessage").css("color","red")
+            $("#sellErrorMessage").fadeOut(4000);
+        }
+    }
+    
 }
 
 $("#sellBtn").on("click",function(){
