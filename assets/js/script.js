@@ -145,6 +145,7 @@ var availableStocksToSell = function(){
     }
 }
 
+//update local storage and update table
 var updateMainTableSell = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
@@ -203,8 +204,8 @@ $("#sellBtn").on("click",function(){
 
 $('#symbolSearch').submit(function (e) { 
     e.preventDefault();
-    var serchSymbl = $('#symbolToSearch').val();
-    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${serchSymbl}&apikey=${apiKey}`)
+    var searchSymbl = $('#symbolToSearch').val();
+    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey}`)
   .then(response => response.json())
   .then(function(data){
       var searchResault = []
@@ -233,10 +234,10 @@ $('#buyForm').submit(function(e){
     .then(response => response.json())
     .then(function(data){
         if(Object.keys(data['Global Quote']).length == 0){
-            alert('we didnt find this symble, please try again');
+            alert('We didnt find this symbole, please try again');
         }
         else if((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash){
-            alert('sorry you dont have the money for this');
+            alert('Sorry you dont have the money for this');
         }
         else{
             //reduce the cash from the user account
