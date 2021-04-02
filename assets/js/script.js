@@ -145,6 +145,23 @@ var availableStocksToSell = function(){
     }
 }
 
+//Substract the sell worth from the total stock worth and total
+var fetchPriceForTheSymbolSold = function(sellStockSymbol, sellStockQuantity){
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
+    fetch(url)
+    .then(response => response.json())
+    .then(function(data){
+        const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
+        //Substract the sell amount from total stock worth
+        stockWorth-= priceSellStock*sellStockQuantity
+        $("#stockWorth").text(stockWorth)
+        //Substract the sell amount from total
+        currentTotal = parseFloat($("#total").text())
+        newTotal= currentTotal - priceSellStock*sellStockQuantity
+        $("#total").text(newTotal)
+    })
+}
+
 //update local storage and update table
 var updateMainTableSell = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
@@ -156,34 +173,11 @@ var updateMainTableSell = function(){
        if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
             userInformation.ownStocks.splice(i,1)
             //Substract the sell worth from the total stock worth and total
-            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
-            fetch(url)
-            .then(response => response.json())
-            .then(function(data){
-                const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
-                //Substract the sell amount from total stock worth
-                stockWorth-= priceSellStock*sellStockQuantity
-                $("#stockWorth").text(stockWorth)
-                //Substract the sell amount from total
-                currentTotal = parseFloat($("#total").text())
-                newTotal= currentTotal - priceSellStock*sellStockQuantity
-                $("#total").text(newTotal)
-            })
+            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
-            userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - $("#sellQuantity").val()
-            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
-            fetch(url)
-            .then(response => response.json())
-            .then(function(data){
-                const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
-                //Substract the sell amount from total stock worth
-                stockWorth-= priceSellStock*sellStockQuantity
-                $("#stockWorth").text(stockWorth)
-                //Substract the sell amount from total
-                currentTotal = parseFloat($("#total").text())
-                newTotal= currentTotal - priceSellStock*sellStockQuantity
-                $("#total").text(newTotal)
-            })
+            userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
+            //Substract the sell worth from the total stock worth and total
+            fetchPriceForTheSymbolSold(sellStockSymbol, sellStockQuantity)
         } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
             $("#sellErrorMessage").css("display","flex")
             $("#sellErrorMessage").css("color","red")
