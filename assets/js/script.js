@@ -1,5 +1,6 @@
 var userInformation = '';
-var apiKey = 'MRZGIXHX6J4WPIDJ';
+/* var apiKey = 'MRZGIXHX6J4WPIDJ'; */
+var apiKey = "SRKIT2G4W4EWBWB5";
 var stockWorth = 0;
 
 $(document).ready(function() {
@@ -70,7 +71,7 @@ var updateDashbord = function(){
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${stockWorth.toFixed(2)}$`);
+        var td2 = $('<td>').html(`${(json['Global Quote']['05. price'] * element.quantity).toFixed(2)}$`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
@@ -135,9 +136,10 @@ var checkIfUserExist = function(){
 /*Sell functions*/
 
 //get the array of the Stocks owned by the user from Local Storage and display in Sell Modal
-var getArrayStocks = function(){
+var availableStocksToSell = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
+    $("#inlineFormCustomSelect").empty()
     for(var i = 0; i < ownedStocks.length ; i++){
         $("#inlineFormCustomSelect").append(`<option id="${ownedStocks[i].symbol}" value="${ownedStocks[i].symbol}">${ownedStocks[i].symbol}</option>`)
     }
@@ -146,6 +148,7 @@ var getArrayStocks = function(){
 var updateMainTableSell = function(){
     var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
+    //Update the local storage object after selling the product
     for(var i = 0; i < ownedStocks.length ; i++){
        if(ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity == $("#sellQuantity").val() ){
             userInformation.ownStocks.splice(i,1)
@@ -158,16 +161,45 @@ var updateMainTableSell = function(){
         }
     }
     localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
+    
+    //Update Table with current price for each share owned
+        //Call the updated userInformation object
+    var newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
+    console.log(newUserInformation)
    
-}
+        //Clear the current table
+    $("#myStocksTable").empty()
+    $("#stockWorth").empty()
+        //Loop through the array of stocks owned and add a new row to the table with corresponding data
+    for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
+        const stockSymbol = newUserInformation.ownStocks[i].symbol
+        const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity)
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=CAQK57WJYT0W3JUP`
+        fetch(url)
+        .then(response => response.json())
+        .then(function(data){
+           var stockPrice = parseFloat(data['Global Quote']['05. price'])
+           //Recreate the Table from scratch and append the updated list of stocks available
+           $("#myStocksTable").append(
+               `<tr>
+                    <td>${stockSymbol}</td>
+                    <td>${stockQuantity}</td>
+                    <td>${stockPrice*stockQuantity}$</td>
+                </tr>`)
 
-checkIfUserExist();
-getArrayStocks()
+            //Update the stock worth total
+            stockWorth-=stockPrice*stockQuantity      
+        })  
+    }
+
+    $("#stockWorth").text(stockWorth)
+}
 
 $("#sellBtn").on("click",function(){
     updateMainTableSell()
 })
 
+/*end of Sell functions*/
 
 $('#symbolSearch').submit(function (e) { 
     e.preventDefault();
@@ -240,4 +272,5 @@ $('#buyForm').submit(function(e){
 });
 
 checkIfUserExist();
+availableStocksToSell()
 updateDashbord();
