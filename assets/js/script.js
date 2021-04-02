@@ -180,7 +180,7 @@ var updateTableAfterSell = function(newUserInformation){
                `<tr>
                     <td>${stockSymbol}</td>
                     <td>${stockQuantity}</td>
-                    <td>${stockPrice*stockQuantity}$</td>
+                    <td>${stockPrice*stockQuantity}<span class="currency">$</span></td>
                 </tr>`)
         })  
     }
