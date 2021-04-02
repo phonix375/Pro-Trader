@@ -171,6 +171,19 @@ var updateMainTableSell = function(){
             })
         } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity > $("#sellQuantity").val()){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - $("#sellQuantity").val()
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
+            fetch(url)
+            .then(response => response.json())
+            .then(function(data){
+                const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
+                //Substract the sell amount from total stock worth
+                stockWorth-= priceSellStock*sellStockQuantity
+                $("#stockWorth").text(stockWorth)
+                //Substract the sell amount from total
+                currentTotal = parseFloat($("#total").text())
+                newTotal= currentTotal - priceSellStock*sellStockQuantity
+                $("#total").text(newTotal)
+            })
         } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity < $   ("#sellQuantity").val()) {
             $("#sellErrorMessage").css("display","flex")
             $("#sellErrorMessage").css("color","red")
