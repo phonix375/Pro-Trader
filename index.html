@@ -38,17 +38,17 @@
             </div>
             <!--end of side of the menu-->
             <!-- main -->
-            <div class="col-10">
-                <div class="row">
+            <div class="col-10" id="header">
+                <div class="row m-5">
+                    <h2>Welcome <span id="userName"></span>!</h2>
                     <div class="row m-5">
-                        <div class="col">Cash: <span class="currentCash"></span>USD</div>
-                        <div class="col">YOUR STOCK WORTH: <span id="stockWorth"></span> USD</div>
-                        <div class="col">TOTAL: <span id="total"></span> USD</div>
-                        <div class="col">
-                            <div class="col">User Name: <span id="userName">someName</span></div>
-                            <div class="col">Change currency</div>
-                        </div>
-
+                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">Total stocks worth: <span id="stockWorth"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency">USD</span></h5>
+                        <select class="col-2" id="currencyDropdownSelect">
+                            <option>Choose your currency</option>
+                            <option selected>USD</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row justify-content-center bg-blue">
