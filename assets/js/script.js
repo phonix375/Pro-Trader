@@ -169,7 +169,7 @@ var updateMainTableSell = function(){
                 newTotal= currentTotal - priceSellStock*sellStockQuantity
                 $("#total").text(newTotal)
             })
-        } else if (ownedStocks[i].symbol == $("option:selected").val() && ownedStocks[i].quantity > $("#sellQuantity").val()){
+        } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - $("#sellQuantity").val()
             const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
             fetch(url)
