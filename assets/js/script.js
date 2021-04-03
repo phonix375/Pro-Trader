@@ -1,14 +1,29 @@
-var userInformation = '';
+var userInformation = {
+    username: null,
+    ownStocks : [],
+    cash : 0,
+    transactions : [],
+    startInformation:[],
+    rates : {},
+    selectedCurrency : "USD",
+    convertedCash : 0,
+    stockWorth : 0
+};
 var apiKey = 'MRZGIXHX6J4WPIDJ';
-var stockWorth = 0;
+var lines = [];
 
 $(document).ready(function() {
     $.ajax({
         type: "GET",
         url: "./resource/nasdaq.csv",
         dataType: "text",
-        success: function(data) {processData(data);}
+        success: function(data) {
+            processData(data);
+        }
      });
+    checkIfUserExist();
+    updateDashbord();
+    
 });
 
 function processData(allText) {
@@ -29,48 +44,40 @@ function processData(allText) {
     }
 }
 
-var lines = [];
-
 var updateStockTotal = function(){
-    $('#stockWorth').text(stockWorth.toFixed(2));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
-    $('#total').text(total);
+    var total = parseFloat(userInformation.cash) + userInformation.stockWorth;
+    
+    $('#stockWorth').text(userInformation.stockWorth.toFixed(2) + " " + userInformation.selectedCurrency);
+    $('.currentCash').text(parseFloat(userInformation.cash).toFixed(2) + " " + userInformation.selectedCurrency);
+    $('#total').text(total.toFixed(2) + " " + userInformation.selectedCurrency);
 }
 var checkIfUserExist = function(){
-    userInformation = localStorage.getItem('userInformation');
-    if(localStorage.getItem('userInformation') == null){
+    var savedUserInformation = localStorage.getItem('userInformation');
+    if(savedUserInformation == null){
         var username = window.prompt("Please enter your name");
         var startCash = window.prompt("Please enter the start cash");
-        userInformation = {
-            username: username,
-            ownStocks : [],
-            cash : startCash,
-            transactions : [],
-            startInformation:[moment().format('DD/MM/YYYY'),startCash]
-
-        };
+        userInformation.username =  username;
+        userInformation.cash = startCash;
+        userInformation.startInformation = [moment().format('DD/MM/YYYY'),startCash];
         saveToLocalStorage();
     }
     else{
-       
-       userInformation = JSON.parse(localStorage.getItem('userInformation'));
+       userInformation = JSON.parse(savedUserInformation);
     }
 }
 var updateDashbord = function(){
     $('#myStocksTable').html('');
-    document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
     $('#userName').html(userInformation.username);
+    userInformation.stockWorth = 0;
     userInformation.ownStocks.forEach( async function(element){
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
         var json = await response.json();
         console.log(json);
-        stockWorth += json['Global Quote']['05. price'] * element.quantity;
+        userInformation.stockWorth += json['Global Quote']['05. price'] * element.quantity;
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${stockWorth.toFixed(2)}$`);
+        var td2 = $('<td>').html(`${userInformation.stockWorth.toFixed(2)}$`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
@@ -186,5 +193,3 @@ $('#buyForm').submit(function(e){
 
 });
 
-checkIfUserExist();
-updateDashbord();
