@@ -151,13 +151,13 @@ var substractSellInStockTotal = function(sellStockSymbol, sellStockQuantity){
     fetch(url)
     .then(response => response.json())
     .then(function(data){
-        const priceSellStock = parseFloat(data["Global Quote"]["05. price"])
+        const priceSellStock = parseFloat(data["Global Quote"]["05. price"]).toFixed(2)
         //Substract the sell amount from total stock worth
         stockWorth-= priceSellStock*sellStockQuantity
         $("#stockWorth").text(stockWorth)
         //Substract the sell amount from total
         currentTotal = parseFloat($("#total").text())
-        newTotal= currentTotal - priceSellStock*sellStockQuantity
+        newTotal= parseFloat(currentTotal - priceSellStock*sellStockQuantity).toFixed(2)
         $("#total").text(newTotal)
     })
 }
@@ -169,12 +169,12 @@ var updateTableAfterSell = function(newUserInformation){
     //Loop through the array of stocks owned and add a new row to the table with corresponding data
     for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
         const stockSymbol = newUserInformation.ownStocks[i].symbol
-        const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity)
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=CAQK57WJYT0W3JUP`
+        const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity).toFixed(0)
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=demo`
         fetch(url)
         .then(response => response.json())
         .then(function(data){
-           var stockPrice = parseFloat(data['Global Quote']['05. price'])
+           var stockPrice = parseFloat(data['Global Quote']['05. price']).toFixed(2)
            //Recreate the Table from scratch and append the updated list of stocks available
            $("#myStocksTable").append(
                `<tr>
