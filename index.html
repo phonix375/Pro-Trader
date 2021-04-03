@@ -40,15 +40,20 @@
             <!-- main -->
             <div class="col-10">
                 <div class="row">
+                    <div class="row mt-5">
+                        <h2>Welcome to the Pro-Trader App, <span id="userName">someName</span>!</h2>
+                    </div>
                     <div class="row m-5">
-                        <div class="col">Cash: <span class="currentCash"></span>USD</div>
-                        <div class="col">YOUR STOCK WORTH: <span id="stockWorth"></span> USD</div>
-                        <div class="col">TOTAL: <span id="total"></span> USD</div>
+                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">Total Stocks Worth: <span id="stockWorth"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency">USD</span></h5>
                         <div class="col">
-                            <div class="col">User Name: <span id="userName">someName</span></div>
-                            <div class="col">Change currency</div>
+                            <!-- BUG: when this select element is added, Sell Button in Sell Modal stop functionning
+                            <select id="currencyPicker">
+                                <option>USD</option>
+                            </select>
+                            -->
                         </div>
-
                     </div>
                 </div>
                 <div class="row justify-content-center bg-blue">
