@@ -2,7 +2,9 @@ var userInformation = '';
 /* var apiKey = 'MRZGIXHX6J4WPIDJ'; */
 var apiKey = "SRKIT2G4W4EWBWB5";
 var stockWorth = 0;
+var lines = [];
 
+//load the CSV file to the application
 $(document).ready(function() {
     $.ajax({
         type: "GET",
@@ -11,13 +13,6 @@ $(document).ready(function() {
         success: function(data) {processData(data);}
      });
 });
-
-var createDropDown = function(lines){
-    console.log(lines);
-    lines.forEach(element => {
-        $('#selector').append(`<option value="${element[0]}">${element[0]}</option>`)
-    });
-}
 
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
@@ -38,7 +33,14 @@ function processData(allText) {
     createDropDown(lines);
 }
 
-var lines = [];
+//add the emelemnts to a drop down in the left side panel
+var createDropDown = function(lines){
+    console.log(lines);
+    lines.forEach(element => {
+        $('#selector').append(`<option value="${element[0]}">${element[0]}</option>`)
+    });
+}
+
 
 var updateStockTotal = function(){
     $('#stockWorth').text(stockWorth.toFixed(2));
@@ -53,13 +55,14 @@ var checkIfUserExist = function(){
         var username = window.prompt("Please enter your name");
         var startCash = window.prompt("Please enter the start cash");
         userInformation = {
+            transactions : [],
             username: username,
             ownStocks : [],
             cash : startCash,
-            transactions : [],
             startInformation:[moment().format('DD/MM/YYYY'),startCash]
 
         };
+        console.log(userInformation);
         saveToLocalStorage();
     }
     else{
@@ -67,6 +70,7 @@ var checkIfUserExist = function(){
        userInformation = JSON.parse(localStorage.getItem('userInformation'));
     }
 }
+
 var updateDashbord = function(){
     $('#myStocksTable').html('');
     document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
@@ -123,24 +127,6 @@ var saveToLocalStorage = function(){
     localStorage.setItem('userInformation',JSON.stringify(userInformation));
 }
 
-
-var checkIfUserExist = function(){
-    userInformation = localStorage.getItem('userInformation');
-    if(localStorage.getItem('userInformation') == null){
-        var username = window.prompt("Please enter your name");
-        var startCash = window.prompt("Please enter the start cash");
-        userInformation = {
-            username: username,
-            ownStocks : [],
-            cash : startCash
-        };
-        saveToLocalStorage();
-    }
-    else{
-       userInformation = JSON.parse(localStorage.getItem('userInformation'));
-       console.log(userInformation) ;
-    }
-}
 
 /*Sell functions*/
 
