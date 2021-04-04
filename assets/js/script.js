@@ -1,8 +1,23 @@
 var userInformation = '';
 /* var apiKey = 'MRZGIXHX6J4WPIDJ'; */
-var apiKey = "SRKIT2G4W4EWBWB5";
+//var apiKey = "SRKIT2G4W4EWBWB5";
 var stockWorth = 0;
 var lines = [];
+var apiKeys = ['MRZGIXHX6J4WPIDJ','SRKIT2G4W4EWBWB5','CAQK57WJYT0W3JUP'];
+var apiKeyIndex = 0;
+
+function apiKey(){
+    apiKeyIndex ++;
+    if(apiKeyIndex > apiKeys.length - 1 ){
+        console.log('going to the if');
+        apiKeyIndex = 0;
+        return apiKeys[apiKeyIndex];
+    }
+    else{
+        console.log('going to the else');
+        return apiKeys[apiKeyIndex];
+    }
+}
 
 //load the CSV file to the application
 $(document).ready(function() {
@@ -73,7 +88,7 @@ var updateDashbord = function(){
     document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
     $('#userName').html(userInformation.username);
     userInformation.ownStocks.forEach( async function(element){
-        var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
+        var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`);
         var json = await response.json();
         stockWorth += json['Global Quote']['05. price'] * element.quantity;
         var tableRow = $("<tr>");
@@ -146,6 +161,9 @@ var mainSellFunction = function(){
     for(var i = 0; i < ownedStocks.length ; i++){
        if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
             userInformation.ownStocks.splice(i,1);
+
+            userInformation.transactions.push([symbolToBuy,'sell',sellStockQuantity,moment().format('DD/MM/YY')]);
+
             //save to local storage
             saveToLocalStorage();
 
@@ -155,6 +173,9 @@ var mainSellFunction = function(){
 
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
+
+            userInformation.transactions.push([symbolToBuy,'sell',sellStockQuantity,moment().format('DD/MM/YY')]);
+
             //save to local storage
             saveToLocalStorage();
 
@@ -181,7 +202,7 @@ $("#sellBtn").on("click",function(){
 $('#symbolSearch').submit(function (e) { 
     e.preventDefault();
     var searchSymbl = $('#symbolToSearch').val();
-    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey}`)
+    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey()}`)
   .then(response => response.json())
   .then(function(data){
       var searchResault = []
@@ -206,7 +227,7 @@ $('#buyForm').submit(function(e){
     e.preventDefault();
     var symbolToBuy = $('#symbolToBuy').val();
     var buyQuantity = $('#buyQuantity').val();
-    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey}`)
+    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey()}`)
     .then(response => response.json())
     .then(function(data){
         if(Object.keys(data['Global Quote']).length == 0){
@@ -220,7 +241,8 @@ $('#buyForm').submit(function(e){
             userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
 
             //record the transaction in transaction arry
-            userInformation.transactions.push([symbolToBuy,'buy',buyQuantity]);
+
+            userInformation.transactions.push([symbolToBuy,'buy',buyQuantity,moment().format('DD/MM/YY')]);
 
 
             //checking to make sure if the user have this stock
@@ -248,6 +270,9 @@ $('#buyForm').submit(function(e){
 
 });
 
+
+
 checkIfUserExist();
-availableStocksToSell()
 updateDashbord();
+availableStocksToSell()
+

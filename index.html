@@ -26,8 +26,8 @@
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#sellModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sellModal"
+                            id="sellModalBtn">
                             Sell
                         </button>
                     </li>
@@ -74,7 +74,7 @@
                                         <tr>
                                             <th scope="col">Symbol</th>
                                             <th scope="col">Quantity</th>
-                                            <th scope="col">Worth</th>
+                                            <th scope="col">Worth/stock</th>
                                         </tr>
                                     </thead>
                                     <tbody id="myStocksTable">
@@ -84,11 +84,11 @@
                             </div>
                         </div>
                     </div>
-                    <!--Popular Stocks table-->
+                    <!--Transactions table-->
                     <div class="col-md-4 m-4" id="popularStocks">
                         <div class="card">
                             <div class="card-header">
-                                Popular stocks
+                                Your transactions
                             </div>
                             <div class="card-body">
                                 <table class="table">
@@ -99,7 +99,7 @@
                                             <th scope="col">Worth</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="myTransactionTable">
                                         <tr>
                                             <th scope="row">1</th>
                                             <td>APPL</td>
