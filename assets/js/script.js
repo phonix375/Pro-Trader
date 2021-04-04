@@ -35,7 +35,6 @@ function processData(allText) {
 
 //add the emelemnts to a drop down in the left side panel
 var createDropDown = function(lines){
-    console.log(lines);
     lines.forEach(element => {
         $('#selector').append(`<option value="${element[0]}">${element[0]}</option>`)
     });
@@ -44,8 +43,6 @@ var createDropDown = function(lines){
 
 var updateStockTotal = function(){
     $('#stockWorth').text(stockWorth.toFixed(2));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
     var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
     $('#total').text(total);
 }
@@ -78,7 +75,6 @@ var updateDashbord = function(){
     userInformation.ownStocks.forEach( async function(element){
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
         var json = await response.json();
-        console.log(json);
         stockWorth += json['Global Quote']['05. price'] * element.quantity;
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
@@ -132,7 +128,6 @@ var saveToLocalStorage = function(){
 
 //get the array of the Stocks owned by the user from Local Storage and display in Sell Modal
 var availableStocksToSell = function(){
-    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
     $("#inlineFormCustomSelect").empty()
     for(var i = 0; i < ownedStocks.length ; i++){
@@ -140,72 +135,34 @@ var availableStocksToSell = function(){
     }
 }
 
-//Substract the sell worth from the total stock worth and total
-var substractSellInStockTotal = function(sellStockSymbol, sellStockQuantity){
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
-    fetch(url)
-    .then(response => response.json())
-    .then(function(data){
-        const priceSellStock = parseFloat(data["Global Quote"]["05. price"]).toFixed(2)
-        //Substract the sell amount from total stock worth
-        stockWorth-= priceSellStock*sellStockQuantity
-        $("#stockWorth").text(stockWorth)
-        //Substract the sell amount from total
-        currentTotal = parseFloat($("#total").text())
-        newTotal= parseFloat(currentTotal - priceSellStock*sellStockQuantity).toFixed(2)
-        $("#total").text(newTotal)
-    })
-}
-
-//Update Table with current price for each share owned
-var updateTableAfterSell = function(newUserInformation){
-    //Clear the current table
-    $("#myStocksTable").empty()
-    //Loop through the array of stocks owned and add a new row to the table with corresponding data
-    for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
-        const stockSymbol = newUserInformation.ownStocks[i].symbol
-        const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity).toFixed(0)
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=demo`
-        fetch(url)
-        .then(response => response.json())
-        .then(function(data){
-           var stockPrice = parseFloat(data['Global Quote']['05. price']).toFixed(2)
-           //Recreate the Table from scratch and append the updated list of stocks available
-           $("#myStocksTable").append(
-               `<tr>
-                    <td>${stockSymbol}</td>
-                    <td>${stockQuantity}</td>
-                    <td>${stockPrice*stockQuantity}$</td>
-                </tr>`)
-        })  
-    }
-}
-
-//update local storage and update table
+//Main sele function 
 var mainSellFunction = function(){
-    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
+
     var ownedStocks = userInformation.ownStocks
-    const sellStockSymbol = $("option:selected").val()
+    const sellStockSymbol = $(".sellOptionSelect").val()
     const sellStockQuantity = $("#sellQuantity").val()
+
     //Update the local storage object after selling the product
     for(var i = 0; i < ownedStocks.length ; i++){
        if(ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity ){
-            userInformation.ownStocks.splice(i,1)
-            localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
-            //Substract the sell worth from the total stock worth and total
-            substractSellInStockTotal(sellStockSymbol, sellStockQuantity)
-            //Remove the option from the select menu for the symbol that has been totally sold
-            $("#"+sellStockSymbol).remove()
-            const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
-            updateTableAfterSell(newUserInformation) 
+            userInformation.ownStocks.splice(i,1);
+            //save to local storage
+            saveToLocalStorage();
+
+            //update the list on the sell modal
+            availableStocksToSell();
+            updateDashbord();
+
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity){
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity
-            localStorage.setItem('userInformation',JSON.stringify(userInformation)) 
-            //Substract the sell worth from the total stock worth and total
-            substractSellInStockTotal(sellStockSymbol, sellStockQuantity)
-            //Call the updated userInformation object
-            const newUserInformation = JSON.parse(localStorage.getItem('userInformation'))
-            updateTableAfterSell(newUserInformation) 
+            //save to local storage
+            saveToLocalStorage();
+
+            //update the list on the sell modal
+            availableStocksToSell()
+
+            //update the dashbord
+            updateDashbord();
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity < sellStockQuantity) {
             $("#sellErrorMessage").css("display","flex")
             $("#sellErrorMessage").css("color","red")
