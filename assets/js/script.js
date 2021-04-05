@@ -1,7 +1,7 @@
 var userInformation = '';
 var stockWorth = 0;
 var lines = [];
-var apiKeys = ['MRZGIXHX6J4WPIDJ','SRKIT2G4W4EWBWB5','CAQK57WJYT0W3JUP'];
+var apiKeys = ['SRKIT2G4W4EWBWB5','MRZGIXHX6J4WPIDJ','CAQK57WJYT0W3JUP'];
 var apiKeyIndex = 0;
 
 function apiKey(){;
