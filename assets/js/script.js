@@ -65,6 +65,69 @@ var checkIfUserExist = function(){
        userInformation = JSON.parse(savedUserInformation);
     }
 }
+
+fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
+.then(function(response) {//promise === callback same idea
+    return response.json();//returns in thus call back response
+}).then(function(data){// only execute once the request is completed
+    // view variables
+    var currencyDropdown = $("#currency-picker");
+
+    // Inititalize model : populate model with rates
+
+    var rates = data.rates;
+
+
+    // update view function  : cash display
+    var displayCash = function() {
+        $(".currentCash").text(userInformation.convertedCash + " " + userInformation.selectedCurrency);
+        
+    }
+
+    // update model function: change currency
+    var changeCurrencyTo = function(newCurrency) {
+        var converted = parseFloat(userInformation.cash[updateStockTotal]) * rates[newCurrency];
+        userInformation.selectedCurrency = newCurrency;
+        userInformation.convertedCash =  converted.toFixed(2);
+        displayCash();
+    }
+
+    var initializeView = function () {
+        // initialize view: populate currency picker
+        $.each(rates, function(currency, rate) {
+            currencyDropdown.append(
+                $('<option></option>').val(currency).html(currency)
+            );
+        });
+
+        //Display cash
+        displayCash();
+    }
+
+    // User Action listener : Changed currency
+    var currencyChangedListener = function () {
+        alert( " Changed Currency to " + currencyDropdown.val() );
+        changeCurrencyTo(currencyDropdown.val());
+    };
+
+    // initializer: register listener for the drop down
+    currencyDropdown.change(currencyChangedListener); 
+
+    initializeView();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 var updateDashbord = function(){
     $('#myStocksTable').html('');
     $('#userName').html(userInformation.username);
