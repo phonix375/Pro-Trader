@@ -26,31 +26,40 @@
                         </button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="sellBtn">Sell</a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sellModal"
+                            id="sellModalBtn">
+                            Sell
+                        </button>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="infoBtn">Info</a>
                     </li>
                 </ul>
+                <select id="selector" class="form-select" aria-label="Default select example">
+                    <option selected>Select a stock to see the price </option>
+                </select>
 
             </div>
             <!--end of side of the menu-->
             <!-- main -->
             <div class="col-10">
                 <div class="row">
+                    <div class="row mt-5">
+                        <h2>Welcome to the Pro-Trader App, <span id="userName">someName</span>!</h2>
+                    </div>
                     <div class="row m-5">
-                        <div class="col">Cash: <span class="currentCash"></span></div>
-                        <div class="col">YOUR STOCK WORTH: <span id="stockWorth"></span></div>
-                        <div class="col">TOTAL: <span id="total"></span></div>
+                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">Total Stocks Worth: <span id="stockWorth"></span> <span
+                                class="currency">USD</span></h5>
+                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency">USD</span></h5>
                         <div class="col">
-                            <div class="col">User Name: <span id="userName">someName</span></div>
-                            <div class="col"><select id="currency-picker">
+                            <!-- BUG: when this select element is added, Sell Button in Sell Modal stop functionning-->
+                            <select id="currency-picker">
                                 <option value="" disabled selected hidden>Pick your currency</option>
                               </select>
-                              
-                              <span id="Cash"></span></div>
+                            
+                            
                         </div>
-
                     </div>
                 </div>
                 <div class="row justify-content-center bg-blue">
@@ -66,7 +75,7 @@
                                         <tr>
                                             <th scope="col">Symbol</th>
                                             <th scope="col">Quantity</th>
-                                            <th scope="col">Worth</th>
+                                            <th scope="col">Worth/stock</th>
                                         </tr>
                                     </thead>
                                     <tbody id="myStocksTable">
@@ -76,27 +85,25 @@
                             </div>
                         </div>
                     </div>
-                    <!--Popular Stocks table-->
+                    <!--Transactions table-->
                     <div class="col-md-4 m-4" id="popularStocks">
                         <div class="card">
                             <div class="card-header">
-                                Popular stocks
+                                Your transactions
                             </div>
                             <div class="card-body">
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Symbol</th>
-                                            <th scope="col">Worth</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Sybbol</th>
+                                            <th scope="col">Buy/Sell</th>
+                                            <th scope="col">Amount</th>
+                                            <th scope="col">Price/unit</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>APPL</td>
-                                            <td>300$</td>
-                                        </tr>
+                                    <tbody id="myTransactionTable">
+
                                     </tbody>
                                 </table>
                             </div>
@@ -111,13 +118,55 @@
                 </div>
             </div>
             <!--end of main-->
+
         </div>
 
     </div>
-    <!--all modals-->
 
+    <!--all modals-->
+    <!--sell stock modal-->
+    <div class="modal fade" id="sellModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sell</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--sell form-->
+                    <form id="sellForm">
+                        <div class="mb-3">
+                            <form id="stocksDropdown">
+                                <div class="form-row align-items-center">
+                                    <div class="col-auto my-1">
+                                        <select class="custom-select mr-sm-2 sellOptionSelect"
+                                            id="inlineFormCustomSelect">
+                                            <option selected>Choose the stock you want to sell...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mb-3 col-4">
+                            <label for="sellQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="sellQuantity">
+                        </div>
+                        <p id="sellErrorMessage" style="display:none">You cannot sell more than you own, please re-enter
+                            a quantity</p>
+                        <button id="sellBtn" type="submit" class="btn btn-primary">Sell</button>
+                    </form>
+                </div>
+                <!--end of sell form-->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end of sell stock modal-->
     <!--buy stock modal-->
     <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -135,10 +184,10 @@
                     <!--buy form-->
                     <form id="buyForm">
                         <div class="mb-3">
-                            <label for="symbolToBuy" class="form-label">Symbel</label>
+                            <label for="symbolToBuy" class="form-label">Symbol</label>
                             <input type="text" class="form-control" id="symbolToBuy"
                                 placeholder="type a symble you want to buy">
-                            <div class="form-text">You can serach for a symbel on the top</div>
+                            <div class="form-text">You can search for a symbol on the top</div>
                         </div>
                         <div class="mb-3">
                             <label for="buyQuantity" class="form-label">Quantity</label>
@@ -153,6 +202,8 @@
                 </div>
             </div>
         </div>
+        </di v>
+        <!--end of buy stock modal-->
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -172,6 +223,7 @@
             integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
             crossorigin="anonymous"></script>
         <script src="./assets/js/script.js"></script>
+
 </body>
 
 </html>
