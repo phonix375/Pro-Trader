@@ -20,7 +20,7 @@ fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4m
 
     // update view function  : cash display
     var displayCash = function() {
-        $("#Cash").text(model.convertedCash + " " + model.selectedCurrency);
+        $(".currency").text(model.selectedCurrency);
     }
 
     // update model function: change currency
