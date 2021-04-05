@@ -49,16 +49,15 @@
                         <h2>Welcome to the Pro-Trader App, <span id="userName">someName</span>!</h2>
                     </div>
                     <div class="row m-5">
-                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency">USD</span></h5>
+                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency"></span></h5>
                         <h5 class="col">Total Stocks Worth: <span id="stockWorth"></span> <span
-                                class="currency">USD</span></h5>
-                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency">USD</span></h5>
+                                class="currency"></span></h5>
+                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency"></span></h5>
                         <div class="col">
-                            <!-- BUG: when this select element is added, Sell Button in Sell Modal stop functionning
-                            <select id="currencyPicker">
-                                <option>USD</option>
-                            </select>
-                            -->
+                            <select id="currency-picker">
+                                <option value="" disabled selected hidden>Pick your currency</option>
+                              </select>
+                            
                         </div>
                     </div>
                 </div>
