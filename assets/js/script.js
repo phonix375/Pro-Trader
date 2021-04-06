@@ -1,7 +1,7 @@
 var userInformation = '';
 var stockWorth = 0;
 var lines = [];
-var apiKeys = ['MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP'];
+var apiKeys = ['MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
 
 function apiKey() {
@@ -92,14 +92,25 @@ var  calculateStockWorth = function(listOfDays,listForChartDays){
     })
 }
 
-var updateChart = function () {
+var updateChart = async function () {
     listOfDays = [];
+    var cashNow = parseFloat(userInformation.startInformation[1]);
+
     for (var i = 0; i < moment().diff(moment(userInformation.startInformation[0]), 'days') + 1; i++) {
-        listOfDays.push({ 'Date': moment(userInformation.startInformation[0]).add(i, 'days').format('YYYY-MM-DD'), 'Stocks': [], 'cash': 0 });
+        for(var b = 0; b < userInformation.transactions.length ; b++){
+            if(userInformation.transactions[b][3] == moment(userInformation.startInformation[0]).add(i, 'days').format('YYYY-MM-DD')){
+                if(userInformation.transactions[b][1] === 'buy'){
+                    cashNow -=  parseFloat(userInformation.transactions[b][2]) * parseFloat(userInformation.transactions[b][4]);
+                }
+                else{
+                    cashNow +=  parseFloat(userInformation.transactions[b][2]) * parseFloat(userInformation.transactions[b][4]);
+                }
+            }
+        }
+        listOfDays.push({ 'Date': moment(userInformation.startInformation[0]).add(i, 'days').format('YYYY-MM-DD'), 'Stocks': [], 'cash': cashNow });
     }
     for (var i = 0; i < userInformation.transactions.length; i++) {
         var index = listOfDays.findIndex(x => x.Date === userInformation.transactions[i][3]);
-        console.log(index)
         if (userInformation.transactions[i][1] === 'buy') {
             var index2 = listOfDays[index].Stocks.findIndex(x => x.symbol === userInformation.transactions[i][0])
             if (index2 > -1) {
@@ -131,38 +142,43 @@ var updateChart = function () {
     console.log(listForChartDays);
     //calculate the worth of the days
     worth = []
-    listForChartDays.forEach(async function (item) {
+    
+    for(const item of listForChartDays) {
         var temp = 0;
-        var index = listOfDays.findIndex(x => x.Date === item);
-        if(index != -1){
-            if (listOfDays[index].Stocks.length > 0) {
-                    listOfDays[index].Stocks.forEach(async function (stock) {
-                        const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`);
-                        const data = await response.json();
-                        if (data['Time Series (Daily)'][item] != undefined) {
-                            console.log('in the if statement:');
-                            temp += data['Time Series (Daily)'][item]['4. close'];
-                            worth.push(temp);
-                        }
-                        else {
-                            console.log('in the else statement:');
-                            var date = data['Meta Data']['3. Last Refreshed'];
-                            console.log(data['Time Series (Daily)'][date]['4. close']);
-                            temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
-                            console.log('the same as the day before', temp);
-                        }
-                    })
-                console.log('this is the temp before push',temp);
-                worth.push(temp);
+        var index3 = listOfDays.findIndex(x => x.Date === item);
+        console.log(index3);
+        if(index3 !== -1){
+            if (listOfDays[index3].Stocks.length > 0) {
+                console.log('this is the if');
+                for(const stock of listOfDays[index3].Stocks) {
+                    const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`);
+                    const data = await response.json();
+                    if (data['Time Series (Daily)'][item] != undefined) {
+                        console.log('in the if statement:');
+                        temp += parseFloat(data['Time Series (Daily)'][item]['4. close']);
+                    }
+                    else {
+                        console.log('in the else statement:');
+                        var date = data['Meta Data']['3. Last Refreshed'];
+                        console.log(data['Time Series (Daily)'][date]['4. close']);
+                        temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
+                        console.log('the same as the day before', temp);
+                    }
+                    }
+                    console.log('this is the temp before push 1',temp);
+                    worth.push({'date': item, 'worth':temp + parseFloat(listOfDays[index3].cash)});
+            }else{
+                console.log('this is the else');
+                console.log('this is the temp before push 2',temp)
+                worth.push({'date': item, 'worth': 0 + parseFloat(listOfDays[index3].cash)});
             }
+        }else{
+            console.log('this is the temp before push 3',temp)
+
+            worth.push({'date': item, 'worth':0 + parseFloat(listOfDays[index3].cash)});
         }
-        else{
-            worth.push(0)
-        }
-    });
+    };
 }
-
-
 
 var updateStockTotal = function () {
     $('#stockWorth').text(stockWorth.toFixed(2));
@@ -392,42 +408,3 @@ $('#buyForm').submit(function (e) {
 checkIfUserExist();
 updateDashbord();
 availableStocksToSell()
-
-
-
-
-
-/*
-    listForChartDays.forEach(async function (item) {
-        var temp = 0;
-        var index = listOfDays.findIndex(x => x.Date === item);
-        if(index != -1){
-            if (listOfDays[index].Stocks.length > 0) {
-
-                listOfDays[index].Stocks.forEach(async function (stock) {
-                        const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`);
-                        const data = await response.json();
-                        console.log(data);
-                        if (data['Time Series (Daily)'][item] != undefined) {
-                            console.log('in the if statement:');
-                            
-                            temp += data['Time Series (Daily)'][item]['4. close'];
-                            worth.push(temp);
-                        }
-                        else {
-                            console.log('in the else statement:');
-                            var date = data['Meta Data']['3. Last Refreshed'];
-                            console.log(data['Time Series (Daily)'][date]['4. close']);
-                            temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
-                            console.log('the same as the day before', temp);
-                            
-                        }
-                    })
-                console.log('this is the temp before push',temp);
-                worth.push(temp);
-            }
-        }else{
-            worth.push(0)
-        }
-    });
-*/
