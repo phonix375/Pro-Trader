@@ -2,64 +2,73 @@ var userInformation = '';
 /* var apiKey = 'MRZGIXHX6J4WPIDJ'; */
 var apiKey = "SRKIT2G4W4EWBWB5";
 var stockWorth = 0;
-
-fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
-.then(function(response) {//promise === callback same idea
-    return response.json();//returns in thus call back response
-}).then(function(data){// only execute once the request is completed
-    // view variables
-    var currencyDropdown = $("#currency-picker");
-
-    // Inititalize model : populate model with rates
-    var model = {
-        cash : 1000,
-        rates : data.rates,
+var conversionModel = {
+        rates : {USD : 1},
         selectedCurrency : "USD",
-        convertedCash : 1000
-    };
+};
 
-    // update view function  : cash display
-    var displayCash = function() {
-        $(".currency").text(model.selectedCurrency);
-    }
+function fetchConversionRates() {  
+    fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
+    .then(function(response) {//promise === callback same idea
+        return response.json();//returns in thus call back response
+    }).then(function(data){// only execute once the request is completed
+        conversionModel.rates = data.rates;
+        // view variables
+        var currencyDropdown = $("#currency-picker");
+        
 
-    // update model function: change currency
-    var changeCurrencyTo = function(newCurrency) {
-        var converted = model.cash * model.rates[newCurrency];
-        model.selectedCurrency = newCurrency;
-        model.convertedCash =  converted.toFixed(2);
-        displayCash();
-    }
+        // update view function  : cash display
+        var displayCash = function() {
+            $(".currency").text(conversionModel.selectedCurrency);
+            
 
-    var initializeView = function () {
-        // initialize view: populate currency picker
-        $.each(model.rates, function(currency, rate) {
-            currencyDropdown.append(
-                $('<option></option>').val(currency).html(currency)
-            );
-        });
+        }
 
-        //Display cash
-        displayCash();
-    }
+        // update model function: change currency
+        var changeCurrencyTo = function(newCurrency) {
+            conversionModel.selectedCurrency = newCurrency;
+            displayCash();
+        
+        }
+        
+        var initializeView = function () {
+            // initialize view: populate currency picker
+            $.each(conversionModel.rates, function(currency, rate) {
+                currencyDropdown.append(
+                    $('<option></option>').val(currency).html(currency)
+                );
+            });
 
-    // User Action listener : Changed currency
-    var currencyChangedListener = function () {
-        alert( " Changed Currency to " + currencyDropdown.val() );
-        changeCurrencyTo(currencyDropdown.val());
-    };
+            //Display cash
+            displayCash();
+        }
 
-    // initializer: register listener for the drop down
-    currencyDropdown.change(currencyChangedListener); 
+        // User Action listener : Changed currency
+        var currencyChangedListener = function () {
+            alert( " Changed Currency to " + currencyDropdown.val() );
+            changeCurrencyTo(currencyDropdown.val());
+            updateDashbord();
+        };
 
-    initializeView();
-});
+        // initializer: register listener for the drop down
+        currencyDropdown.change(currencyChangedListener); 
+        initializeView();
+    });
+}
 
 
+  function convertToSelectedCurrency(amountInUSD) {
+
+    var selectedCurrency = conversionModel.selectedCurrency;
+    var currencyConversionRate = conversionModel.rates[selectedCurrency];
+    return amountInUSD * currencyConversionRate;
+
+  };
 
 
 
 $(document).ready(function() {
+    fetchConversionRates();
     $.ajax({
         type: "GET",
         url: "./resource/nasdaq.csv",
@@ -89,11 +98,11 @@ function processData(allText) {
 var lines = [];
 
 var updateStockTotal = function(){
-    $('#stockWorth').text(stockWorth.toFixed(2));
+    $('#stockWorth').text(convertToSelectedCurrency(stockWorth).toFixed(2));
     console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
     console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
-    $('#total').text(total);
+    var total = userInformation.cash + stockWorth;
+    $('#total').text(convertToSelectedCurrency(total).toFixed(2));
 }
 var checkIfUserExist = function(){
     userInformation = localStorage.getItem('userInformation');
@@ -117,17 +126,18 @@ var checkIfUserExist = function(){
 }
 var updateDashbord = function(){
     $('#myStocksTable').html('');
-    document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
+    document.querySelector('.currentCash').innerHTML = convertToSelectedCurrency(parseFloat(userInformation['cash'])).toFixed(2);
     $('#userName').html(userInformation.username);
+    stockWorth=0;
     userInformation.ownStocks.forEach( async function(element){
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey}`);
         var json = await response.json();
         console.log(json);
-        stockWorth += json['Global Quote']['05. price'] * element.quantity;
+        stockWorth += json['Global Quote']['05. price'] * element.quantity ;
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${(json['Global Quote']['05. price'] * element.quantity).toFixed(2)}$`);
+        var td2 = $('<td>').html(`${convertToSelectedCurrency(json['Global Quote']['05. price'] * element.quantity).toFixed(2) + " " + conversionModel.selectedCurrency}`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
