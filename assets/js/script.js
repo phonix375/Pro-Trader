@@ -19,7 +19,6 @@ function apiKey() {
         return apiKeys[apiKeyIndex];
     }
 }
-
 //load the CSV file to the application
 $(document).ready(function () {
     fetchConversionRates();
@@ -80,15 +79,13 @@ function fetchConversionRates() {
         initializeView();
     });
 }
-
 function convertToSelectedCurrency(amountInUSD) {
 
     var selectedCurrency = conversionModel.selectedCurrency;
     var currencyConversionRate = conversionModel.rates[selectedCurrency];
     return amountInUSD * currencyConversionRate;
 
-  };
-
+};
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
     var headers = allTextLines[0].split(',');
@@ -107,14 +104,12 @@ function processData(allText) {
     }
     createDropDown(lines);
 }
-
 //add the emelemnts to a drop down in the left side panel
 var createDropDown = function (lines) {
     lines.forEach(element => {
         $('#selector').append(`<option value="${element[0]}">${element[0]}</option>`)
     });
 }
-
 var checkIfUserExist = function () {
     userInformation = localStorage.getItem('userInformation');
     if (localStorage.getItem('userInformation') == null) {
@@ -135,12 +130,10 @@ var checkIfUserExist = function () {
         userInformation = JSON.parse(localStorage.getItem('userInformation'));
     }
 }
-
 var getWeekPrice = function(DayStocks, day){
     console.log(DayStocks);
     console.log(day);
 }
-
 var  calculateStockWorth = function(listOfDays,listForChartDays){
     console.log(listOfDays);
     console.log(listForChartDays);
@@ -155,7 +148,6 @@ var  calculateStockWorth = function(listOfDays,listForChartDays){
         }
     })
 }
-
 var updateChartVisual = function (worth){
     var dates = [];
     var amount = [];
