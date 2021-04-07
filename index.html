@@ -21,18 +21,21 @@
             <div class="col-2 text-cente bg-dark text-light p-4 p-lg-3 ">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buyModal">
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#buyModal">
                             Buy
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sellModal"
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#sellModal"
                             id="sellModalBtn">
                             Sell
                         </button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="infoBtn">Info</a>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#"
+                            id="infoBtn">
+                            Info
+                        </button>
                     </li>
                 </ul>
                 <select id="selector" class="form-select" aria-label="Default select example">
@@ -87,14 +90,14 @@
                     <div class="col-md-4 m-4" id="popularStocks">
                         <div class="card">
                             <div class="card-header">
-                                Your transactions
+                                My Transactions
                             </div>
                             <div class="card-body">
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th scope="col">Date</th>
-                                            <th scope="col">Sybbol</th>
+                                            <th scope="col">Symbol</th>
                                             <th scope="col">Buy/Sell</th>
                                             <th scope="col">Amount</th>
                                             <th scope="col">Price/unit</th>
@@ -184,7 +187,7 @@
                         <div class="mb-3">
                             <label for="symbolToBuy" class="form-label">Symbol</label>
                             <input type="text" class="form-control" id="symbolToBuy"
-                                placeholder="type a symble you want to buy">
+                                placeholder="Type a symbol you want to buy">
                             <div class="form-text">You can search for a symbol on the top</div>
                         </div>
                         <div class="mb-3">

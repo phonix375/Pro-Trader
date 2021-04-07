@@ -7,4 +7,14 @@ html{
     font-size: 62.5%;
 }
 
-/*all veriables*/
+/*all variables*/
+.nav-item .btn{
+    color:white;
+    font-size: large;
+    border-color: white;
+    margin-top: 30px;
+}
+
+#selector{
+    margin-top: 30px;
+}
