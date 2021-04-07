@@ -1,7 +1,7 @@
 var userInformation = '';
 var stockWorth = 0;
 var lines = [];
-var apiKeys = ['MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M'];
+var apiKeys = ['ZCER87CRU4VD7SK1','P30XA70BFKGQFKN1','MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M','U535L3Z7T1IMQPQA','TSK0D4EDNO4QXNKY','JPPM5CVPIBKTNMNP','QRNW5OHRMF3D9RGR'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
 var conversionModel = {
     rates : {USD : 1},
@@ -113,17 +113,7 @@ var createDropDown = function (lines) {
 var checkIfUserExist = function () {
     userInformation = localStorage.getItem('userInformation');
     if (localStorage.getItem('userInformation') == null) {
-        var username = window.prompt("Please enter your name");
-        var startCash = window.prompt("Please enter the start cash");
-        userInformation = {
-            transactions: [],
-            username: username,
-            ownStocks: [],
-            cash: startCash,
-            startInformation: [moment().format('YYYY-MM-DD'), startCash]
-
-        };
-        saveToLocalStorage();
+        location.replace("./firstLogin.html")
     }
     else {
 
@@ -247,12 +237,16 @@ var updateChart = async function () {
                 for(const stock of listOfDays[index3].Stocks) {
                     const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`);
                     const data = await response.json();
+                    try{
+                    
                     if (data['Time Series (Daily)'][item] != undefined) {
                         console.log('in the if statement:');
                         temp += parseFloat(data['Time Series (Daily)'][item]['4. close']);
                     }
-                    else {
+                }
+                    catch {
                         console.log('in the else statement:');
+                        console.log(data)
                         var date = data['Meta Data']['3. Last Refreshed'];
                         console.log(data['Time Series (Daily)'][date]['4. close']);
                         temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
@@ -356,6 +350,7 @@ var mainSellFunction = function () {
             fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`)
                 .then(response => response.json()
                     .then(function (data) {
+                        console.log('this is data' ,data);
                         userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
                         userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
                         stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
