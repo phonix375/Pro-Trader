@@ -290,15 +290,16 @@ var updateChart = async function () {
 }
 
 var updateStockTotal = function () {
-    $('#stockWorth').text(stockWorth.toFixed(2));
-    var total = parseFloat(document.querySelector('.currentCash').innerHTML) + parseFloat(document.querySelector('#stockWorth').innerHTML);
-    $('#total').text(total);
+    $('#stockWorth').text(convertToSelectedCurrency(stockWorth).toFixed(2));
+    var total = userInformation.cash + stockWorth;
+    $('#total').text(convertToSelectedCurrency(total).toFixed(2));
 }
 var updateDashbord = function () {
     $('#myStocksTable').html('');
     $('#myTransactionTable').html('');
-    document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
+    document.querySelector('.currentCash').innerHTML = convertToSelectedCurrency(parseFloat(userInformation['cash'])).toFixed(2);
     $('#userName').html(userInformation.username);
+    stockWorth = 0;
     userInformation.ownStocks.forEach(async function (element) {
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`);
         var json = await response.json();
@@ -307,7 +308,7 @@ var updateDashbord = function () {
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${(json['Global Quote']['05. price'] * element.quantity).toFixed(2)}$`);
+        var td2 = $('<td>').html(`${convertToSelectedCurrency(json['Global Quote']['05. price'] * element.quantity).toFixed(2) + " " + conversionModel.selectedCurrency}`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
