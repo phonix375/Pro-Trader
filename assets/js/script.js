@@ -3,6 +3,11 @@ var stockWorth = 0;
 var lines = [];
 var apiKeys = ['MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
+var conversionModel = {
+    rates : {USD : 1},
+    selectedCurrency : "USD",
+};
+
 
 function apiKey() {
     apiKeyIndex++
@@ -17,6 +22,7 @@ function apiKey() {
 
 //load the CSV file to the application
 $(document).ready(function () {
+    fetchConversionRates();
     $.ajax({
         type: "GET",
         url: "./resource/nasdaq.csv",
@@ -24,6 +30,65 @@ $(document).ready(function () {
         success: function (data) { processData(data); }
     });
 });
+
+function fetchConversionRates() {  
+    fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
+    .then(function(response) {//promise === callback same idea
+        return response.json();//returns in thus call back response
+    }).then(function(data){// only execute once the request is completed
+        conversionModel.rates = data.rates;
+        // view variables
+        var currencyDropdown = $("#currency-picker");
+        
+
+        // update view function  : cash display
+        var displayCash = function() {
+            $(".currency").text(conversionModel.selectedCurrency);
+            
+
+        }
+
+        // update model function: change currency
+        var changeCurrencyTo = function(newCurrency) {
+            conversionModel.selectedCurrency = newCurrency;
+            displayCash();
+        
+        }
+        
+        var initializeView = function () {
+            // initialize view: populate currency picker
+            $.each(conversionModel.rates, function(currency, rate) {
+                currencyDropdown.append(
+                    $('<option></option>').val(currency).html(currency)
+                );
+            });
+
+            //Display cash
+            displayCash();
+        }
+
+        // User Action listener : Changed currency
+        var currencyChangedListener = function () {
+            alert( " Changed Currency to " + currencyDropdown.val() );
+            changeCurrencyTo(currencyDropdown.val());
+            updateDashbord();
+        };
+
+        // initializer: register listener for the drop down
+        currencyDropdown.change(currencyChangedListener); 
+        initializeView();
+    });
+}
+
+
+function convertToSelectedCurrency(amountInUSD) {
+
+    var selectedCurrency = conversionModel.selectedCurrency;
+    var currencyConversionRate = conversionModel.rates[selectedCurrency];
+    return amountInUSD * currencyConversionRate;
+
+  };
+
 
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
