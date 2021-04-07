@@ -8,7 +8,7 @@ var conversionModel = {
     selectedCurrency : "USD",
 };
 
-
+// rotates the api keys 
 function apiKey() {
     apiKeyIndex++
     if (apiKeyIndex > apiKeys.length - 1) {
@@ -30,13 +30,14 @@ $(document).ready(function () {
         success: function (data) { processData(data); }
     });
 });
-
+//gets the conversion rate to USD
 function fetchConversionRates() {  
     fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
     .then(function(response) {//promise === callback same idea
         return response.json();//returns in thus call back response
     }).then(function(data){// only execute once the request is completed
         conversionModel.rates = data.rates;
+        console.log(conversionModel.rates);
         // view variables
         var currencyDropdown = $("#currency-picker");
         
@@ -80,7 +81,6 @@ function fetchConversionRates() {
     });
 }
 
-
 function convertToSelectedCurrency(amountInUSD) {
 
     var selectedCurrency = conversionModel.selectedCurrency;
@@ -88,7 +88,6 @@ function convertToSelectedCurrency(amountInUSD) {
     return amountInUSD * currencyConversionRate;
 
   };
-
 
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
@@ -277,8 +276,14 @@ var updateChart = async function () {
             }
         }else{
             console.log('this is the temp before push 3',temp)
-
-            worth.push({'date': item, 'worth':0 + parseFloat(listOfDays[index3].cash)});
+            var cashTemp = 0
+            try{
+                cashTemp = parseFloat(listOfDays[index3].cash);
+            }
+            catch(error){
+                cashTemp = 0;
+            };
+            worth.push({'date': item, 'worth':0 + cashTemp});
         }
     };
     updateChartVisual(worth);
