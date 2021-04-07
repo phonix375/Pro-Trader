@@ -1,6 +1,4 @@
 var userInformation = '';
-/* var apiKey = 'MRZGIXHX6J4WPIDJ'; */
-var apiKey = "SRKIT2G4W4EWBWB5";
 var stockWorth = 0;
 var lines = [];
 var apiKeys = ['MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M'];
@@ -9,8 +7,6 @@ var conversionModel = {
     rates : {USD : 1},
     selectedCurrency : "USD",
 };
-
-
 
 
 function apiKey() {
@@ -24,78 +20,8 @@ function apiKey() {
     }
 }
 
-var conversionModel = {
-        rates : {USD : 1},
-        selectedCurrency : "USD",
-};
-
-function fetchConversionRates() {  
-    fetch ('https://currencyapi.net/api/v1/rates?key=0jDY0YoYl8170GvF1NbLAmPOqJimi4mjTo5o&base=USD')//some amount of time 
-    .then(function(response) {//promise === callback same idea
-        return response.json();//returns in thus call back response
-    }).then(function(data){// only execute once the request is completed
-        conversionModel.rates = data.rates;
-        // view variables
-        var currencyDropdown = $("#currency-picker");
-        
-
-        // update view function  : cash display
-        var displayCash = function() {
-            $(".currency").text(conversionModel.selectedCurrency);
-            
-
-        }
-
-        // update model function: change currency
-        var changeCurrencyTo = function(newCurrency) {
-            conversionModel.selectedCurrency = newCurrency;
-            displayCash();
-        
-        }
-        
-        var initializeView = function () {
-            // initialize view: populate currency picker
-            $.each(conversionModel.rates, function(currency, rate) {
-                currencyDropdown.append(
-                    $('<option></option>').val(currency).html(currency)
-                );
-            });
-
-            //Display cash
-            displayCash();
-        }
-
-        // User Action listener : Changed currency
-        var currencyChangedListener = function () {
-            alert( " Changed Currency to " + currencyDropdown.val() );
-            changeCurrencyTo(currencyDropdown.val());
-            updateDashbord();
-        };
-
-        // initializer: register listener for the drop down
-        currencyDropdown.change(currencyChangedListener); 
-        initializeView();
-    });
-}
-
-
-  function convertToSelectedCurrency(amountInUSD) {
-
-    var selectedCurrency = conversionModel.selectedCurrency;
-    var currencyConversionRate = conversionModel.rates[selectedCurrency];
-    return amountInUSD * currencyConversionRate;
-
-  };
-
-
-
-
 //load the CSV file to the application
-<<<<<<< HEAD
-$(document).ready(function() {
-=======
 $(document).ready(function () {
->>>>>>> feature/update-main-tables
     fetchConversionRates();
     $.ajax({
         type: "GET",
@@ -183,14 +109,6 @@ function processData(allText) {
     createDropDown(lines);
 }
 
-var lines = [];
-
-var updateStockTotal = function(){
-    $('#stockWorth').text(convertToSelectedCurrency(stockWorth).toFixed(2));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    console.log(parseFloat(document.querySelector('#stockWorth').innerHTML));
-    var total = userInformation.cash + stockWorth;
-    $('#total').text(convertToSelectedCurrency(total).toFixed(2));
 //add the emelemnts to a drop down in the left side panel
 var createDropDown = function (lines) {
     lines.forEach(element => {
@@ -237,6 +155,44 @@ var  calculateStockWorth = function(listOfDays,listForChartDays){
            worth.push(0); 
         }
     })
+}
+
+var updateChartVisual = function (worth){
+    var dates = [];
+    var amount = [];
+    for(var i = 0; i < worth.length; i++){
+        dates.push(worth[i].date);
+        amount.push(worth[i].worth);
+    }
+    var ctx = document.getElementById('myChart').getContext('2d');
+
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'My Portfolio worth',
+            data: amount,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
 }
 
 var updateChart = async function () {
@@ -325,6 +281,7 @@ var updateChart = async function () {
             worth.push({'date': item, 'worth':0 + parseFloat(listOfDays[index3].cash)});
         }
     };
+    updateChartVisual(worth);
 }
 
 var updateStockTotal = function () {
@@ -334,17 +291,18 @@ var updateStockTotal = function () {
 }
 var updateDashbord = function () {
     $('#myStocksTable').html('');
-    document.querySelector('.currentCash').innerHTML = convertToSelectedCurrency(parseFloat(userInformation['cash'])).toFixed(2);
+    $('#myTransactionTable').html('');
+    document.querySelector('.currentCash').innerHTML = parseFloat(userInformation['cash']).toFixed(2);
     $('#userName').html(userInformation.username);
     userInformation.ownStocks.forEach(async function (element) {
         var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`);
         var json = await response.json();
-        console.log(json);
-        stockWorth += json['Global Quote']['05. price'] * element.quantity ;
+        console.log('look here',json);
+        stockWorth += json['Global Quote']['05. price'] * element.quantity;
         var tableRow = $("<tr>");
         var td = $('<td>').html(`${element['symbol']}`);
         var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${convertToSelectedCurrency(json['Global Quote']['05. price'] * element.quantity).toFixed(2) + " " + conversionModel.selectedCurrency}`);
+        var td2 = $('<td>').html(`${(json['Global Quote']['05. price'] * element.quantity).toFixed(2)}$`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
@@ -369,57 +327,11 @@ var updateDashbord = function () {
 
 };
 
-var ctx = document.getElementById('myChart').getContext('2d');
-
-var myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['30/03/2021', '29/03/2021', '28/03/2021', '27/03/2021', '26/03/2021', '25/03/2021'],
-        datasets: [{
-            label: 'My Portfolio worth',
-            data: [10000, 11500, 12000, 9800, 9900, 16000],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
-});
 
 var saveToLocalStorage = function () {
     localStorage.setItem('userInformation', JSON.stringify(userInformation));
 }
 
-
-var checkIfUserExist = function(){
-    userInformation = localStorage.getItem('userInformation');
-    if(localStorage.getItem('userInformation') == null){
-        var username = window.prompt("Please enter your name");
-        var startCash = window.prompt("Please enter the start cash");
-        userInformation = {
-            username: username,
-            ownStocks : [],
-            cash : startCash
-        };
-        saveToLocalStorage();
-    }
-    else{
-       userInformation = JSON.parse(localStorage.getItem('userInformation'));
-       console.log(userInformation) ;
-    }
-}
 
 /*Sell functions*/
 
@@ -432,55 +344,13 @@ var availableStocksToSell = function () {
     }
 }
 
-//Substract the sell worth from the total stock worth and total
-var substractSellInStockTotal = function(sellStockSymbol, sellStockQuantity){
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=CAQK57WJYT0W3JUP`
-    fetch(url)
-    .then(response => response.json())
-    .then(function(data){
-        const priceSellStock = parseFloat(data["Global Quote"]["05. price"]).toFixed(2)
-        //Substract the sell amount from total stock worth
-        stockWorth-= priceSellStock*sellStockQuantity
-        $("#stockWorth").text(stockWorth)
-        //Substract the sell amount from total
-        currentTotal = parseFloat($("#total").text())
-        newTotal= parseFloat(currentTotal - priceSellStock*sellStockQuantity).toFixed(2)
-        $("#total").text(newTotal)
-    })
-}
-
-//Update Table with current price for each share owned
-var updateTableAfterSell = function(newUserInformation){
-    //Clear the current table
-    $("#myStocksTable").empty()
-    //Loop through the array of stocks owned and add a new row to the table with corresponding data
-    for(var i = 0 ; i < newUserInformation.ownStocks.length; i++){
-        const stockSymbol = newUserInformation.ownStocks[i].symbol
-        const stockQuantity = parseFloat(newUserInformation.ownStocks[i].quantity).toFixed(0)
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=demo`
-        fetch(url)
-        .then(response => response.json())
-        .then(function(data){
-           var stockPrice = parseFloat(data['Global Quote']['05. price']).toFixed(2)
-           //Recreate the Table from scratch and append the updated list of stocks available
-           $("#myStocksTable").append(
-               `<tr>
-                    <td>${stockSymbol}</td>
-                    <td>${stockQuantity}</td>
-                    <td>${stockPrice*stockQuantity}$</td>
-                </tr>`)
-        })  
-    }
-}
 //Main sele function 
 var mainSellFunction = function () {
 
-//update local storage and update table
-var mainSellFunction = function(){
-    var userInformation = JSON.parse(localStorage.getItem('userInformation'));
     var ownedStocks = userInformation.ownStocks
-    const sellStockSymbol = $("option:selected").val()
+    const sellStockSymbol = $(".sellOptionSelect").val()
     const sellStockQuantity = $("#sellQuantity").val()
+
     //Update the local storage object after selling the product
     for (var i = 0; i < ownedStocks.length; i++) {
         if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity) {
@@ -613,5 +483,5 @@ $('#buyForm').submit(function (e) {
 });
 
 checkIfUserExist();
-availableStocksToSell();
 updateDashbord();
+availableStocksToSell()
