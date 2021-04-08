@@ -7,30 +7,26 @@
 }
 
 .form-container{
-    position:absolute;
+    position:relative;
     border-radius: 10px;
     top:100px;
-    padding:10px;
-    box-shadow: 0px 0px 25px 0px;   
+    padding:40px;
+    box-shadow: 0px 0px 2px 0px; 
 }
 
-.form-container h1{
+.form-container h2{
   color:black;
-  padding:25px;
-  text-align: center;
+  padding-bottom: 20px
 }
 
 .form-control{
   background:transparent;
-  border:none;
-  border-bottom:black 1px solid;
   outline:none;
-  font-size:16px;
 }
 
 .form-label,.form-text,.form-check-label{
   color:black;
-  font-weight:bold
+
 }
 
 a{
