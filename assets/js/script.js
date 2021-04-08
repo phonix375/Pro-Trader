@@ -307,7 +307,7 @@ var updateDashbord = function () {
         var td1 = $('<td>').html(`${transaction[0]}`);
         var td2 = $('<td>').html(`${transaction[1]}`);
         var td3 = $('<td>').html(`${transaction[2]}`);
-        var td4 = $('<td>').html(`${convertToSelectedCurrency(transaction[4])+ " " + conversionModel.selectedCurrency}`}$`);
+        var td4 = $('<td>').html(`${convertToSelectedCurrency(transaction[4])+ " " + conversionModel.selectedCurrency}`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
