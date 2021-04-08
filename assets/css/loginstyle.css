@@ -1,3 +1,10 @@
+body{
+  background-image: url("../images/nick-chong-N__BnvQ_w18-unsplash.jpg");
+  background-attachment:fixed;
+  background-position: center;
+  background-size: cover;
+}
+
 .row{
   justify-content:center
 }
@@ -8,14 +15,18 @@
 
 .form-container{
     position:relative;
-    border-radius: 10px;
+    width: 70%;
+    border-radius: 5px;
     top:100px;
     padding:40px;
-    box-shadow: 0px 0px 2px 0px; 
+    box-shadow: 0px 0px 1px 0px; 
+    background-color: white;
+    margin: auto;
 }
 
 .form-container h2{
   color:black;
+  text-align: center;
   padding-bottom: 20px
 }
 
