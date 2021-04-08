@@ -25,7 +25,7 @@ header h4{
 
 .left h1{
   position: relative;
-  top:10vh;
+
   font-weight: bolder;
   width: 50%;
   text-align: center;
@@ -36,7 +36,7 @@ header h4{
 
 .left h6{
   position: relative;
-  top:10vh;
+
   width: 40%;
   text-align: center;
   color: white;
