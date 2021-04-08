@@ -18,7 +18,7 @@
         <!--row for the all application-->
         <div class="row min-vh-100 no gutters text-center">
             <!--side menu -->
-            <div class="col-2 text-cente bg-dark text-light p-4 p-lg-3 ">
+            <div class="col-2 text-center bg-dark text-light p-4 p-lg-3 ">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#buyModal">
@@ -41,7 +41,6 @@
                 <select id="selector" class="form-select" aria-label="Default select example">
                     <option selected>Select a stock to see the price </option>
                 </select>
-
             </div>
             <!--end of side of the menu-->
             <!-- main -->
@@ -51,16 +50,21 @@
                         <h2>Welcome to the Pro-Trader App, <span id="userName">someName</span>!</h2>
                     </div>
                     <div class="row m-5">
-                        <h5 class="col">Cash: <span class="currentCash"></span> <span class="currency"></span></h5>
-                        <h5 class="col">Total Stocks Worth: <span id="stockWorth"></span> <span class="currency"></span>
-                        </h5>
-                        <h5 class="col">TOTAL: <span id="total"></span> <span class="currency"></span></h5>
-                        <div class="col">
-                            <select id="currency-picker">
-                                <option value="" disabled selected hidden>Pick your currency</option>
-                            </select>
-
-                        </div>
+                        <header>
+                            <div class="row">
+                                <h5 class="col-3">Cash</h5>
+                                <h5 class="col-3">Total Stocks Worth </h5>
+                                <h5 class="col-3">Total Portfolio</h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-3"><span class="currentCash"></span> <span class="currency"></span></div>
+                                <div class="col-3"><span id="stockWorth"></span> <span class="currency"></span></div>
+                                <div class="col-3"><span id="total"></span> <span class="currency"></span></div>
+                                <select class="col-2" id="currency-picker">
+                                    <option value="" disabled selected hidden>Pick your currency</option>
+                                </select>
+                            </div>
+                        </header>
                     </div>
                 </div>
                 <div class="row justify-content-center bg-blue">
@@ -99,7 +103,7 @@
                                             <th scope="col">Date</th>
                                             <th scope="col">Symbol</th>
                                             <th scope="col">Buy/Sell</th>
-                                            <th scope="col">Amount</th>
+                                            <th scope="col">Quantity</th>
                                             <th scope="col">Price/unit</th>
                                         </tr>
                                     </thead>
@@ -115,13 +119,10 @@
                         <h3>My Portfolio worth</h3>
                         <canvas id="myChart"></canvas>
                     </div>
-
                 </div>
             </div>
             <!--end of main-->
-
         </div>
-
     </div>
 
     <!--all modals-->
