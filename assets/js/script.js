@@ -431,70 +431,66 @@ $("#sellBtn").on("click", function () {
 $('#symbolSearch').submit(function (e) {
     e.preventDefault();
     var searchSymbl = $('#symbolToSearch').val();
-    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey()}`)
-        .then(response => response.json())
-        .then(function (data) {
-            var searchResault = []
-            data.bestMatches.forEach(element => {
-                searchResault.push([element['1. symbol'], element['2. name']]);
-            });
-            $('#searchResults').html('');
-            var table = $('<table>').attr('class', 'results')
-            searchResault.forEach(function (element) {
-                var tableRow = $('<tr>');
-                var data = $('<td>').text(element[0]);
-                var data1 = $('<td>').text(element[1]);
-                $(tableRow).append(data);
-                $(tableRow).append(data1);
-                $(table).append(tableRow);
-            });
-            $('#searchResults').append(table);
+    fetchData(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey()}`,function(data){
+        var searchResault = []
+        data.bestMatches.forEach(element => {
+            searchResault.push([element['1. symbol'], element['2. name']]);
         });
+        $('#searchResults').html('');
+        var table = $('<table>').attr('class', 'results')
+        searchResault.forEach(function (element) {
+            var tableRow = $('<tr>');
+            var data = $('<td>').text(element[0]);
+            var data1 = $('<td>').text(element[1]);
+            $(tableRow).append(data);
+            $(tableRow).append(data1);
+            $(table).append(tableRow);
+        });
+        $('#searchResults').append(table);
+    })
 });
 
 $('#buyForm').submit(function (e) {
     e.preventDefault();
     var symbolToBuy = $('#symbolToBuy').val();
     var buyQuantity = $('#buyQuantity').val();
-    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey()}`)
-        .then(response => response.json())
-        .then(function (data) {
-            if (Object.keys(data['Global Quote']).length == 0) {
-                alert('We didnt find this symbole, please try again');
+    fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey()}`,function(data){
+        if (Object.keys(data['Global Quote']).length == 0) {
+            alert('We didnt find this symbole, please try again');
+        }
+        else if ((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash) {
+            alert('Sorry you dont have the money for this');
+        }
+        else {
+            //reduce the cash from the user account
+            userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
+
+            //record the transaction in transaction arry
+
+            userInformation.transactions.push([symbolToBuy, 'buy', buyQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
+
+            //checking to make sure if the user have this stock
+            var checkIfOwn = userInformation.ownStocks.find(a => a.symbol === symbolToBuy);
+            //add to the array if the user dont have this stock
+            if (checkIfOwn == null) {
+                userInformation.ownStocks.push({ "symbol": symbolToBuy, "quantity": buyQuantity });
+
             }
-            else if ((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash) {
-                alert('Sorry you dont have the money for this');
-            }
+            //if the user have this stock, loop over the array and increment the quantity
             else {
-                //reduce the cash from the user account
-                userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
-
-                //record the transaction in transaction arry
-
-                userInformation.transactions.push([symbolToBuy, 'buy', buyQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
-
-                //checking to make sure if the user have this stock
-                var checkIfOwn = userInformation.ownStocks.find(a => a.symbol === symbolToBuy);
-                //add to the array if the user dont have this stock
-                if (checkIfOwn == null) {
-                    userInformation.ownStocks.push({ "symbol": symbolToBuy, "quantity": buyQuantity });
-
-                }
-                //if the user have this stock, loop over the array and increment the quantity
-                else {
-                    for (var i = 0; i < userInformation.ownStocks.length; i++) {
-                        if (userInformation.ownStocks[i]['symbol'] == symbolToBuy) {
-                            var temp = parseInt(userInformation.ownStocks[i]['quantity']) + parseInt(buyQuantity);
-                            userInformation.ownStocks[i]['quantity'] = '';
-                            userInformation.ownStocks[i]['quantity'] = temp;
-                        }
+                for (var i = 0; i < userInformation.ownStocks.length; i++) {
+                    if (userInformation.ownStocks[i]['symbol'] == symbolToBuy) {
+                        var temp = parseInt(userInformation.ownStocks[i]['quantity']) + parseInt(buyQuantity);
+                        userInformation.ownStocks[i]['quantity'] = '';
+                        userInformation.ownStocks[i]['quantity'] = temp;
                     }
-                };
-                //save the changes to local storage
-                saveToLocalStorage();
-                updateDashbord();
-                availableStocksToSell();
-            }
+                }
+            };
+            //save the changes to local storage
+            saveToLocalStorage();
+            updateDashbord();
+            availableStocksToSell();
+    }
         });
 
 });

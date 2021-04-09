@@ -51,10 +51,10 @@
                     </div>
                     <div class="row m-5">
                         <header>
-                            <div class="row">
-                                <h5 class="col-3">Cash</h5>
-                                <h5 class="col-3">Total Stocks Worth </h5>
-                                <h5 class="col-3">Total Portfolio</h5>
+                            <div class="row ">
+                                <h5 class="col-3 shadow p-3 mb-5 bg-white rounded">Cash</h5>
+                                <h5 class="col-3 shadow p-3 mb-5 bg-white rounded">Total Stocks Worth </h5>
+                                <h5 class="col-3 shadow p-3 mb-5 bg-white rounded">Total Portfolio</h5>
                             </div>
                             <div class="row">
                                 <div class="col-3"><span class="currentCash"></span> <span class="currency"></span></div>
@@ -67,15 +67,15 @@
                         </header>
                     </div>
                 </div>
-                <div class="row justify-content-center bg-blue">
+                <div class="row justify-content-center bg-blue ">
                     <!--My Stocks Table-->
-                    <div class="col-md-4 m-4" id="myStocks">
+                    <div class="col-md-4 m-4 shadow p-3 mb-5 bg-white rounded" id="myStocks">
                         <div class="card">
                             <div class="card-header">
                                 My Stocks
                             </div>
                             <div class="card-body">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th scope="col">Symbol</th>
@@ -91,13 +91,13 @@
                         </div>
                     </div>
                     <!--Transactions table-->
-                    <div class="col-md-5 m-4" id="popularStocks">
+                    <div class="col-md-5 m-4 shadow p-3 mb-5 bg-white rounded" id="popularStocks">
                         <div class="card">
                             <div class="card-header">
                                 My Transactions
                             </div>
                             <div class="card-body">
-                                <table class="table">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th scope="col">Date</th>
@@ -115,7 +115,7 @@
                         </div>
                     </div>
                     <!--Graphical Chart-->
-                    <div class="col-md-6 col-sm-8 m-4">
+                    <div class="col-md-7 col-sm-8 m-4 shadow p-3 mb-5 bg-white rounded">
                         <h3>My Portfolio worth</h3>
                         <canvas id="myChart"></canvas>
                     </div>
