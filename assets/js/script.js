@@ -2,6 +2,7 @@ var userInformation = '';
 var stockWorth = 0;
 var lines = [];
 var apiKeys = ['ZCER87CRU4VD7SK1','P30XA70BFKGQFKN1','MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M','U535L3Z7T1IMQPQA','TSK0D4EDNO4QXNKY','JPPM5CVPIBKTNMNP','QRNW5OHRMF3D9RGR'];
+//var apiKeys = ['demo'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
 var conversionModel = {
     rates : {USD : 1},
@@ -297,7 +298,7 @@ var updateChart = async function () {
             if (listOfDays[index3].Stocks.length > 0) {
                 console.log('this is the if');
                 for(const stock of listOfDays[index3].Stocks) {
-                    const response = await fetchData(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`, function(data){
+                    fetchData(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`, function(data){
                         try{
                     
                             if (data['Time Series (Daily)'][item] != undefined) {
@@ -350,7 +351,7 @@ var updateDashbord = function () {
     $('#userName').html(userInformation.username);
     stockWorth = 0;
     userInformation.ownStocks.forEach(async function (element) {
-        var response = await fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`,function(json){
+            fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`,function(json){
             console.log('look here',json);
             stockWorth += json['Global Quote']['05. price'] * element.quantity;
             var tableRow = $("<tr>");
