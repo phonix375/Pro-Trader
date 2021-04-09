@@ -6,9 +6,12 @@
 html{
     font-size: 62.5%;
 }
-
+.nav{
+    width: 100%;
+}
 /*all variables*/
 .nav-item .btn{
+    width: 100%;
     color:white;
     font-size: large;
     border-color: white;
@@ -52,4 +55,11 @@ header select{
         border-color: white;
         margin-top: 30px;
     }
+}
+
+.nav-item .btn:hover{
+    color:black;
+    background-color: white;
+    border-color: white;
+    box-shadow: white;
 }
