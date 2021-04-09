@@ -22,6 +22,9 @@ function fetchData(url, callback){
                 return response.json();
             })
             .then(function(data){
+                if(data.note == 'Thank you for using Alpha Vantage! Our standard AP…would like to target a higher API call frequency.' ){
+                    fetchData(url, callback); 
+                }
                 var result = JSON.stringify(data);
                 apiResultCache[url] = result;
                 console.log("cache updated: " + JSON.stringify(apiResultCache));
@@ -205,6 +208,36 @@ var myChart = new Chart(ctx, {
 
 }
 
+var updateChart1 = function(){
+    var stocks = [];
+    var quantity = [];
+    for(var i = 0 ; i< userInformation.ownStocks.length;i++){
+        stocks.push(userInformation.ownStocks[i].symbol);
+        quantity.push(userInformation.ownStocks[i].quantity);
+    }
+    new Chart(document.getElementById("myChart1"), {
+        type: 'pie',
+        data: {
+          labels: stocks,
+          datasets: [{
+            label: "Portfolio Diversity",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: quantity
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Portfolio Diversity'
+          }
+        }
+    });
+    
+    }
+    
+
+
+
 var updateChart = async function () {
     listOfDays = [];
     var cashNow = parseFloat(userInformation.startInformation[1]);
@@ -347,6 +380,7 @@ var updateDashbord = function () {
         $('#myTransactionTable').append(tableRow);
     });
     updateChart();
+    updateChart1();
 
 };
 
