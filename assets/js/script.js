@@ -3,6 +3,8 @@ var stockWorth = 0;
 var lines = [];
 var apiKeys = ['ZCER87CRU4VD7SK1','P30XA70BFKGQFKN1','MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M','U535L3Z7T1IMQPQA','TSK0D4EDNO4QXNKY','JPPM5CVPIBKTNMNP','QRNW5OHRMF3D9RGR'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
+const newCache = await caches.open('TradeProCache');
+
 var conversionModel = {
     rates : {USD : 1},
     selectedCurrency : "USD",
@@ -307,7 +309,7 @@ var updateDashbord = function () {
         var td1 = $('<td>').html(`${transaction[0]}`);
         var td2 = $('<td>').html(`${transaction[1]}`);
         var td3 = $('<td>').html(`${transaction[2]}`);
-        var td4 = $('<td>').html(`${transaction[4]}$`);
+        var td4 = $('<td>').html(`${convertToSelectedCurrency(transaction[4])+ " " + conversionModel.selectedCurrency}`);
         $(tableRow).append(td);
         $(tableRow).append(td1);
         $(tableRow).append(td2);
