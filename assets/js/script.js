@@ -2,13 +2,45 @@ var userInformation = '';
 var stockWorth = 0;
 var lines = [];
 var apiKeys = ['ZCER87CRU4VD7SK1','P30XA70BFKGQFKN1','MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M','U535L3Z7T1IMQPQA','TSK0D4EDNO4QXNKY','JPPM5CVPIBKTNMNP','QRNW5OHRMF3D9RGR'];
+//var apiKeys = ['demo'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
-const newCache = await caches.open('TradeProCache');
 
 var conversionModel = {
     rates : {USD : 1},
     selectedCurrency : "USD",
 };
+var apiResultCache = {};
+var urlInProgress = [];
+
+
+function fetchData(url, callback){
+    if(apiResultCache[url]){
+        console.log("found cache entry");
+        callback(apiResultCache[url])
+    }else{
+        if(urlInProgress.indexOf(url, 0) === -1){
+            urlInProgress.push(url);
+            fetch(url).then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                if(data.note == 'Thank you for using Alpha Vantage! Our standard AP…would like to target a higher API call frequency.' ){
+                    fetchData(url, callback); 
+                }
+                var result = JSON.stringify(data);
+                apiResultCache[url] = result;
+                console.log("cache updated: " + JSON.stringify(apiResultCache));
+                callback(JSON.parse(result));
+                var index = urlInProgress.indexOf(url,0);
+                urlInProgress.splice(index, 1);
+            })
+        }else{
+            setTimeout(function() {
+                fetchData(url, callback);
+              }, 16);
+        }
+    }
+}
 
 // rotates the api keys 
 function apiKey() {
@@ -178,6 +210,36 @@ var myChart = new Chart(ctx, {
 
 }
 
+var updateChart1 = function(){
+    var stocks = [];
+    var quantity = [];
+    for(var i = 0 ; i< userInformation.ownStocks.length;i++){
+        stocks.push(userInformation.ownStocks[i].symbol);
+        quantity.push(userInformation.ownStocks[i].quantity);
+    }
+    new Chart(document.getElementById("myChart1"), {
+        type: 'pie',
+        data: {
+          labels: stocks,
+          datasets: [{
+            label: "Portfolio Diversity",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850",],
+            data: quantity
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Portfolio Diversity'
+          }
+        }
+    });
+    
+    }
+    
+
+
+
 var updateChart = async function () {
     listOfDays = [];
     var cashNow = parseFloat(userInformation.startInformation[1]);
@@ -237,23 +299,24 @@ var updateChart = async function () {
             if (listOfDays[index3].Stocks.length > 0) {
                 console.log('this is the if');
                 for(const stock of listOfDays[index3].Stocks) {
-                    const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`);
-                    const data = await response.json();
-                    try{
+                    fetchData(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&apikey=${apiKey()}`, function(data){
+                        try{
                     
-                    if (data['Time Series (Daily)'][item] != undefined) {
-                        console.log('in the if statement:');
-                        temp += parseFloat(data['Time Series (Daily)'][item]['4. close']);
-                    }
-                }
-                    catch {
-                        console.log('in the else statement:');
-                        console.log(data)
-                        var date = data['Meta Data']['3. Last Refreshed'];
-                        console.log(data['Time Series (Daily)'][date]['4. close']);
-                        temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
-                        console.log('the same as the day before', temp);
-                    }
+                            if (data['Time Series (Daily)'][item] != undefined) {
+                                console.log('in the if statement:');
+                                temp += parseFloat(data['Time Series (Daily)'][item]['4. close']);
+                            }
+                        }
+                            catch {
+                                console.log('in the else statement:');
+                                console.log(data)
+                                var date = data['Meta Data']['3. Last Refreshed'];
+                                console.log(data['Time Series (Daily)'][date]['4. close']);
+                                temp += parseFloat(data['Time Series (Daily)'][date]['4. close']);
+                                console.log('the same as the day before', temp);
+                            }
+                    });
+
                     }
                     console.log('this is the temp before push 1',temp);
                     worth.push({'date': item, 'worth':temp + parseFloat(listOfDays[index3].cash)});
@@ -289,19 +352,20 @@ var updateDashbord = function () {
     $('#userName').html(userInformation.username);
     stockWorth = 0;
     userInformation.ownStocks.forEach(async function (element) {
-        var response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`);
-        var json = await response.json();
-        console.log('look here',json);
-        stockWorth += json['Global Quote']['05. price'] * element.quantity;
-        var tableRow = $("<tr>");
-        var td = $('<td>').html(`${element['symbol']}`);
-        var td1 = $('<td>').html(`${element.quantity}`);
-        var td2 = $('<td>').html(`${convertToSelectedCurrency(json['Global Quote']['05. price'] * element.quantity).toFixed(2) + " " + conversionModel.selectedCurrency}`);
-        $(tableRow).append(td);
-        $(tableRow).append(td1);
-        $(tableRow).append(td2);
-        $('#myStocksTable').append(tableRow);
-        updateStockTotal(element);
+            fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`,function(json){
+            console.log('look here',json);
+            stockWorth += json['Global Quote']['05. price'] * element.quantity;
+            var tableRow = $("<tr>");
+            var td = $('<td>').html(`${element['symbol']}`);
+            var td1 = $('<td>').html(`${element.quantity}`);
+            var td2 = $('<td>').html(`${convertToSelectedCurrency(json['Global Quote']['05. price'] * element.quantity).toFixed(2) + " " + conversionModel.selectedCurrency}`);
+            $(tableRow).append(td);
+            $(tableRow).append(td1);
+            $(tableRow).append(td2);
+            $('#myStocksTable').append(tableRow);
+            updateStockTotal(element);
+        });
+       
     });
     userInformation.transactions.forEach(function (transaction) {
         var tableRow = $("<tr>");
@@ -318,6 +382,7 @@ var updateDashbord = function () {
         $('#myTransactionTable').append(tableRow);
     });
     updateChart();
+    updateChart1();
 
 };
 
@@ -349,19 +414,15 @@ var mainSellFunction = function () {
     for (var i = 0; i < ownedStocks.length; i++) {
         if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity) {
             userInformation.ownStocks.splice(i, 1);
-            fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`)
-                .then(response => response.json()
-                    .then(function (data) {
-                        console.log('this is data' ,data);
-                        userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
-                        userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
-                        stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
+            fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`,function(data){
+                console.log('this is data' ,data);
+                userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
+                userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
+                stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
 
-                        saveToLocalStorage();
-                        updateDashbord();
-                    }));
-
-
+                saveToLocalStorage();
+                updateDashbord();
+            })
             //save to local storage
             saveToLocalStorage();
 
@@ -371,18 +432,15 @@ var mainSellFunction = function () {
 
         } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity) {
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity;
-            fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`)
-                .then(response => response.json()
-                    .then(function (data) {
-                        userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
-                        userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
-                        stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
+            fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`,function(data){
+                userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
+                userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
+                stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
 
-                        saveToLocalStorage();
+                saveToLocalStorage();
 
-                        updateDashbord();
-                    }
-                    ));
+                updateDashbord();
+            })
             //save to local storage
             saveToLocalStorage();
 
@@ -409,70 +467,66 @@ $("#sellBtn").on("click", function () {
 $('#symbolSearch').submit(function (e) {
     e.preventDefault();
     var searchSymbl = $('#symbolToSearch').val();
-    fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey()}`)
-        .then(response => response.json())
-        .then(function (data) {
-            var searchResault = []
-            data.bestMatches.forEach(element => {
-                searchResault.push([element['1. symbol'], element['2. name']]);
-            });
-            $('#searchResults').html('');
-            var table = $('<table>').attr('class', 'results')
-            searchResault.forEach(function (element) {
-                var tableRow = $('<tr>');
-                var data = $('<td>').text(element[0]);
-                var data1 = $('<td>').text(element[1]);
-                $(tableRow).append(data);
-                $(tableRow).append(data1);
-                $(table).append(tableRow);
-            });
-            $('#searchResults').append(table);
+    fetchData(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchSymbl}&apikey=${apiKey()}`,function(data){
+        var searchResault = []
+        data.bestMatches.forEach(element => {
+            searchResault.push([element['1. symbol'], element['2. name']]);
         });
+        $('#searchResults').html('');
+        var table = $('<table>').attr('class', 'results')
+        searchResault.forEach(function (element) {
+            var tableRow = $('<tr>');
+            var data = $('<td>').text(element[0]);
+            var data1 = $('<td>').text(element[1]);
+            $(tableRow).append(data);
+            $(tableRow).append(data1);
+            $(table).append(tableRow);
+        });
+        $('#searchResults').append(table);
+    })
 });
 
 $('#buyForm').submit(function (e) {
     e.preventDefault();
     var symbolToBuy = $('#symbolToBuy').val();
     var buyQuantity = $('#buyQuantity').val();
-    fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey()}`)
-        .then(response => response.json())
-        .then(function (data) {
-            if (Object.keys(data['Global Quote']).length == 0) {
-                alert('We didnt find this symbole, please try again');
+    fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbolToBuy}&apikey=${apiKey()}`,function(data){
+        if (Object.keys(data['Global Quote']).length == 0) {
+            alert('We didnt find this symbole, please try again');
+        }
+        else if ((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash) {
+            alert('Sorry you dont have the money for this');
+        }
+        else {
+            //reduce the cash from the user account
+            userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
+
+            //record the transaction in transaction arry
+
+            userInformation.transactions.push([symbolToBuy, 'buy', buyQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
+
+            //checking to make sure if the user have this stock
+            var checkIfOwn = userInformation.ownStocks.find(a => a.symbol === symbolToBuy);
+            //add to the array if the user dont have this stock
+            if (checkIfOwn == null) {
+                userInformation.ownStocks.push({ "symbol": symbolToBuy, "quantity": buyQuantity });
+
             }
-            else if ((data['Global Quote']['05. price'] * buyQuantity) > userInformation.cash) {
-                alert('Sorry you dont have the money for this');
-            }
+            //if the user have this stock, loop over the array and increment the quantity
             else {
-                //reduce the cash from the user account
-                userInformation.cash = userInformation.cash - (data['Global Quote']['05. price'] * buyQuantity);
-
-                //record the transaction in transaction arry
-
-                userInformation.transactions.push([symbolToBuy, 'buy', buyQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
-
-                //checking to make sure if the user have this stock
-                var checkIfOwn = userInformation.ownStocks.find(a => a.symbol === symbolToBuy);
-                //add to the array if the user dont have this stock
-                if (checkIfOwn == null) {
-                    userInformation.ownStocks.push({ "symbol": symbolToBuy, "quantity": buyQuantity });
-
-                }
-                //if the user have this stock, loop over the array and increment the quantity
-                else {
-                    for (var i = 0; i < userInformation.ownStocks.length; i++) {
-                        if (userInformation.ownStocks[i]['symbol'] == symbolToBuy) {
-                            var temp = parseInt(userInformation.ownStocks[i]['quantity']) + parseInt(buyQuantity);
-                            userInformation.ownStocks[i]['quantity'] = '';
-                            userInformation.ownStocks[i]['quantity'] = temp;
-                        }
+                for (var i = 0; i < userInformation.ownStocks.length; i++) {
+                    if (userInformation.ownStocks[i]['symbol'] == symbolToBuy) {
+                        var temp = parseInt(userInformation.ownStocks[i]['quantity']) + parseInt(buyQuantity);
+                        userInformation.ownStocks[i]['quantity'] = '';
+                        userInformation.ownStocks[i]['quantity'] = temp;
                     }
-                };
-                //save the changes to local storage
-                saveToLocalStorage();
-                updateDashbord();
-                availableStocksToSell();
-            }
+                }
+            };
+            //save the changes to local storage
+            saveToLocalStorage();
+            updateDashbord();
+            availableStocksToSell();
+    }
         });
 
 });

@@ -1,3 +1,59 @@
+.left{
+  position: relative;
+  background-color: #1c333b;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-end
+}
+
+header{
+  background-color:#1c333b ;
+}
+
+.logo{
+  height: 40%;
+  margin: 10px;
+}
+
+header h4{
+  font-weight: bolder;
+  color: white;
+  width: 40%;
+  margin-left: 12px;
+}
+
+.left h1{
+  position: relative;
+
+  font-weight: bolder;
+  width: 50%;
+  text-align: center;
+  color: white;
+  margin: auto;
+  font-size:3rem;
+}
+
+.left h6{
+  position: relative;
+
+  width: 40%;
+  text-align: center;
+  color: white;
+  margin: auto;
+  margin-top: 15px;
+  font-weight: lighter;
+}
+
+.right{
+  position: relative;
+  height: 100vh;
+  background-image: url("../images/nick-chong-N__BnvQ_w18-unsplash.jpg");
+  background-attachment:fixed;
+
+  background-size: cover;
+}
+
 .row{
   justify-content:center
 }
@@ -7,30 +63,36 @@
 }
 
 .form-container{
-    position:absolute;
-    border-radius: 10px;
-    top:100px;
-    padding:10px;
-    box-shadow: 0px 0px 25px 0px;   
+    position:relative;
+    justify-self: center;
+    width: 70%;
+    border-radius: 5px;
+    top:20vh;
+    padding:40px;
+    box-shadow: 0px 0px 1px 0px; 
+    background-color: white;
+    margin: auto;
 }
 
-.form-container h1{
+.form-container h2{
   color:black;
-  padding:25px;
-  text-align: center;
+  text-align: left;
+  padding-bottom: 20px
 }
 
 .form-control{
   background:transparent;
-  border:none;
-  border-bottom:black 1px solid;
   outline:none;
-  font-size:16px;
 }
 
 .form-label,.form-text,.form-check-label{
   color:black;
-  font-weight:bold
+
+}
+
+.form-container input{
+  position: relative;
+  width:100%;
 }
 
 a{
@@ -39,4 +101,35 @@ a{
 
 a:hover{
   text-decoration: none;
+}
+
+.btn{
+  position: relative;
+  background-color:#35b884;
+  width: 60%;
+}
+
+.btn:hover{
+  background-color:#2a976b
+}
+
+
+@media screen and (max-width:768px) {
+
+  .left{
+    position: relative;
+    height: 500px;
+  }
+
+  .left h1{
+    position: relative;
+    width: 70%;
+    top:5px;
+  }
+
+  .left h6{
+    position: relative;
+    width: 70%;
+    top:5px;
+  }
 }
