@@ -44,7 +44,6 @@ var CretaeTable = function(lines){
     
 }
 
-
 function bySymbol(){
     var input, filter, TableBody, tr, a, i, txtValue;
     input = document.getElementById("SearchBySymbol");

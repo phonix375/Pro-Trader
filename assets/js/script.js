@@ -21,15 +21,19 @@ function fetchData(url, callback){
         if(urlInProgress.indexOf(url, 0) === -1){
             urlInProgress.push(url);
             fetch(url).then(function(response){
+                console.log('this is the response1', response)
                 return response.json();
             })
             .then(function(data){
-                if(data.note == 'Thank you for using Alpha Vantage! Our standard AP…would like to target a higher API call frequency.' ){
+                console.log('this is the data response',data);
+                if(data['Note']){
+                    url = url.split('apikey=')[0] +'apikey=' +apiKey();
                     fetchData(url, callback); 
                 }
                 var result = JSON.stringify(data);
                 apiResultCache[url] = result;
                 console.log("cache updated: " + JSON.stringify(apiResultCache));
+                console.log('sending to the callback', JSON.parse(result));
                 callback(JSON.parse(result));
                 var index = urlInProgress.indexOf(url,0);
                 urlInProgress.splice(index, 1);
@@ -213,9 +217,11 @@ var myChart = new Chart(ctx, {
 var updateChart1 = function(){
     var stocks = [];
     var quantity = [];
+    var colors = [];
     for(var i = 0 ; i< userInformation.ownStocks.length;i++){
         stocks.push(userInformation.ownStocks[i].symbol);
         quantity.push(userInformation.ownStocks[i].quantity);
+        colors.push('#' + Math.floor(Math.random()*16777215).toString(16));
     }
     new Chart(document.getElementById("myChart1"), {
         type: 'pie',
@@ -223,7 +229,7 @@ var updateChart1 = function(){
           labels: stocks,
           datasets: [{
             label: "Portfolio Diversity",
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850",],
+            backgroundColor: colors,
             data: quantity
           }]
         },
