@@ -1,7 +1,24 @@
 var userInformation = '';
 var stockWorth = 0;
 var lines = [];
-var apiKeys = ['ZCER87CRU4VD7SK1','P30XA70BFKGQFKN1','MRZGIXHX6J4WPIDJ', 'SRKIT2G4W4EWBWB5', 'CAQK57WJYT0W3JUP','2U6QJE5A5XJ5LK70','QCW2Q4BHZDJ7D93M','U535L3Z7T1IMQPQA','TSK0D4EDNO4QXNKY','JPPM5CVPIBKTNMNP','QRNW5OHRMF3D9RGR'];
+var apiKeys = ['UJHV29RYWP9HTNBV',
+'NC4BY431YHDBJM58',
+'7PIET1UKFPMGXXJE',
+'K9WISYL9VS5AX67W',
+'AZJHCWSW5OOMWZRE',
+'D11M39FYNNUNIWGS',
+'ZCER87CRU4VD7SK1',
+'P30XA70BFKGQFKN1',
+'MRZGIXHX6J4WPIDJ', 
+'SRKIT2G4W4EWBWB5',
+ 'CAQK57WJYT0W3JUP',
+ '2U6QJE5A5XJ5LK70',
+ 'QCW2Q4BHZDJ7D93M',
+ 'U535L3Z7T1IMQPQA',
+ 'TSK0D4EDNO4QXNKY',
+ 'JPPM5CVPIBKTNMNP',
+ 'QRNW5OHRMF3D9RGR',
+'FYFV33LG9TKD9O46'];
 //var apiKeys = ['demo'];
 var apiKeyIndex = Math.floor(Math.random() * apiKeys.length);
 
@@ -13,40 +30,53 @@ var apiResultCache = {};
 var urlInProgress = [];
 
 
-function fetchData(url, callback){
-    if(apiResultCache[url]){
-        console.log("found cache entry");
-        callback(apiResultCache[url]) 
-    }else{
-        if(urlInProgress.indexOf(url, 0) === -1){
-            urlInProgress.push(url);
-            fetch(url).then(function(response){
-                console.log('this is the response1', response)
-                return response.json();
-            })
-            .then(function(data){
-                console.log('this is the data response',data);
-                if(data.Note == 'Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.'){
-                    url = url.split('apikey=')[0] +'apikey=' +apiKey();
-                    return fetchData(url, callback); 
-                }
-                else{
-                    var result = JSON.stringify(data);
-                    apiResultCache[url] = result;
-                    console.log("cache updated: " + JSON.stringify(apiResultCache));
-                    console.log('sending to the callback', JSON.parse(result));
-                    callback(JSON.parse(result));
-                    var index = urlInProgress.indexOf(url,0);
-                    urlInProgress.splice(index, 1);
-                }
-            })
-        }else{
-            setTimeout(function() {
-                fetchData(url, callback);
-              }, 16);
-        }
-    }
+function toKey(url) {
+    // var str     = "/pages/new?name=J&return_url=/page/new";
+    // var matches = str.match(/name=([^&]*)/);
+    // url = url.replace(regex, '');
+    // alert(matches[1]);
+    return url.split('apikey=')[0]
 }
+
+
+function fetchData(url, callback) {
+    var cacheKey = toKey(url);
+
+    if(apiResultCache[cacheKey] && apiResultCache[cacheKey].status == "completed" ) {
+        console.log("found cache entry");
+        callback(apiResultCache[cacheKey].data);
+        return;
+    }
+
+    if(apiResultCache[cacheKey] && apiResultCache[cacheKey].status == "fetching" ) { 
+        console.log("skipping request since it's in fetching state");
+        return;
+    }
+
+    apiResultCache[cacheKey] = { status: "fetching", data: null };
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+
+            if(data["Note"]) {
+                console.log('BAD RESPONSE DETECTED:', data);
+                delete apiResultCache[cacheKey];
+                fetchData(toKey(url) + 'apikey=' + apiKey(),callback);
+                return;
+            }
+
+            apiResultCache[cacheKey].status = "completed";
+            apiResultCache[cacheKey].data = data;
+            // setTimeout(function(){ delete apiResultCache[cacheKey]; }, 5000); // set cache TTL 
+            callback(apiResultCache[cacheKey].data);      
+        })
+        .catch((error) => {            
+            console.error('Error:', error);
+            delete apiResultCache[cacheKey];
+        });
+};
 
 // rotates the api keys 
 function apiKey() {
@@ -359,7 +389,7 @@ var updateDashbord = function () {
     document.querySelector('.currentCash').innerHTML = convertToSelectedCurrency(parseFloat(userInformation['cash'])).toFixed(2);
     $('#userName').html(userInformation.username);
     stockWorth = 0;
-    userInformation.ownStocks.forEach(async function (element) {
+    userInformation.ownStocks.forEach(function (element) {
             fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${element.symbol}&apikey=${apiKey()}`,function(json){
             console.log('look here',json);
             stockWorth += json['Global Quote']['05. price'] * element.quantity;
@@ -417,13 +447,15 @@ var mainSellFunction = function () {
     var ownedStocks = userInformation.ownStocks
     const sellStockSymbol = $(".sellOptionSelect").val()
     const sellStockQuantity = $("#sellQuantity").val()
-
+    console.log('before the for loop' ,ownedStocks,sellStockSymbol,sellStockQuantity);
     //Update the local storage object after selling the product
-    for (var i = 0; i < ownedStocks.length; i++) {
-        if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity == sellStockQuantity) {
+    
+    for (var i = 0; i < userInformation.ownStocks.length; i++) {
+        console.log('loop',i);
+        if (ownedStocks[i].symbol == sellStockSymbol && userInformation.ownStocks[i].quantity === sellStockQuantity) {
             userInformation.ownStocks.splice(i, 1);
             fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`,function(data){
-                console.log('this is data' ,data);
+                console.log('this is data in the sell function 1' ,data);
                 userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
                 userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
                 stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
@@ -438,9 +470,10 @@ var mainSellFunction = function () {
             availableStocksToSell();
             updateDashbord();
 
-        } else if (ownedStocks[i].symbol == sellStockSymbol && ownedStocks[i].quantity > sellStockQuantity) {
+        } else if (userInformation.ownStocks[i].symbol == sellStockSymbol && userInformation.ownStocks[i].quantity > sellStockQuantity) {
             userInformation.ownStocks[i].quantity = userInformation.ownStocks[i].quantity - sellStockQuantity;
             fetchData(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sellStockSymbol}&apikey=${apiKey()}`,function(data){
+                console.log('this is the sell data in the sell function 2',data)
                 userInformation.cash = userInformation.cash + parseFloat(data['Global Quote']['05. price']);
                 userInformation.transactions.push([sellStockSymbol, 'sell', sellStockQuantity, moment().format('YYYY-MM-DD'), parseFloat(data['Global Quote']['05. price'])]);
                 stockWorth -= data['Global Quote']['05. price'] * sellStockQuantity;
