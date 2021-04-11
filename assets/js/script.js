@@ -576,5 +576,3 @@ $('#buyForm').submit(function (e) {
     checkIfUserExist();
     updateDashbord();
     availableStocksToSell();
-
-
