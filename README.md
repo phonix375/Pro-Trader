@@ -28,9 +28,13 @@
 - Github Kanban Project
 - Github Issues
 - Github branch, pull requests
-
 ## Developers
 - Alexy K.
 - Jeff G.
 - Billie H.
 - Lucile T.
+
+
+## Screenshots : 
+First login page to enter the name and the starter cash :
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture.PNG?raw=true)
