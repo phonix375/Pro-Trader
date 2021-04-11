@@ -43,4 +43,4 @@ Main Dashbord after the first login :
 ![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture1.PNG?raw=true)
 
 Buy stocks : 
-![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Buy function.gif?raw=true)
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Buyfunction.gif?raw=true)
