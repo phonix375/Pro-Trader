@@ -11,23 +11,12 @@ var conversionModel = {
 };
 var apiResultCache = {};
 var urlInProgress = [];
-let cache;
 
 
- function cacheInit() {
-    return caches.open('my-cache');
-};
-
-
-
-async function fetchData(url, callback){
-    const response = await cache.match(url);
-    console.log({response}, 'look here <-------');
+function fetchData(url, callback){
     if(apiResultCache[url]){
         console.log("found cache entry");
-        callback(apiResultCache[url])
-    }else if(response){
-        
+        callback(apiResultCache[url]) 
     }else{
         if(urlInProgress.indexOf(url, 0) === -1){
             urlInProgress.push(url);
@@ -36,20 +25,20 @@ async function fetchData(url, callback){
                 return response.json();
             })
             .then(function(data){
-
-                cache.put(url, new Response(data));
                 console.log('this is the data response',data);
                 if(data['Note']){
                     url = url.split('apikey=')[0] +'apikey=' +apiKey();
-                    fetchData(url, callback); 
+                    return fetchData(url, callback); 
                 }
-                var result = JSON.stringify(data);
-                apiResultCache[url] = result;
-                console.log("cache updated: " + JSON.stringify(apiResultCache));
-                console.log('sending to the callback', JSON.parse(result));
-                callback(JSON.parse(result));
-                var index = urlInProgress.indexOf(url,0);
-                urlInProgress.splice(index, 1);
+                else{
+                    var result = JSON.stringify(data);
+                    apiResultCache[url] = result;
+                    console.log("cache updated: " + JSON.stringify(apiResultCache));
+                    console.log('sending to the callback', JSON.parse(result));
+                    callback(JSON.parse(result));
+                    var index = urlInProgress.indexOf(url,0);
+                    urlInProgress.splice(index, 1);
+                }
             })
         }else{
             setTimeout(function() {
@@ -549,10 +538,6 @@ $('#buyForm').submit(function (e) {
         });
 
 });
-cacheInit().then(function(e){
-    cache = e;
-    checkIfUserExist();
-    updateDashbord();
-    availableStocksToSell()
-})
-
+checkIfUserExist();
+updateDashbord();
+availableStocksToSell()
