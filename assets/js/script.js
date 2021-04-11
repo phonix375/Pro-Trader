@@ -11,12 +11,23 @@ var conversionModel = {
 };
 var apiResultCache = {};
 var urlInProgress = [];
+let cache;
 
 
-function fetchData(url, callback){
+ function cacheInit() {
+    return caches.open('my-cache');
+};
+
+
+
+async function fetchData(url, callback){
+    const response = await cache.match(url);
+    console.log({response}, 'look here <-------');
     if(apiResultCache[url]){
         console.log("found cache entry");
         callback(apiResultCache[url])
+    }else if(response){
+        
     }else{
         if(urlInProgress.indexOf(url, 0) === -1){
             urlInProgress.push(url);
@@ -25,6 +36,8 @@ function fetchData(url, callback){
                 return response.json();
             })
             .then(function(data){
+
+                cache.put(url, new Response(data));
                 console.log('this is the data response',data);
                 if(data['Note']){
                     url = url.split('apikey=')[0] +'apikey=' +apiKey();
@@ -536,7 +549,10 @@ $('#buyForm').submit(function (e) {
         });
 
 });
+cacheInit().then(function(e){
+    cache = e;
+    checkIfUserExist();
+    updateDashbord();
+    availableStocksToSell()
+})
 
-checkIfUserExist();
-updateDashbord();
-availableStocksToSell()
