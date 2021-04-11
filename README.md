@@ -42,5 +42,16 @@ First login page to enter the name and the starter cash :
 Main Dashbord after the first login :
 ![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture1.PNG?raw=true)
 
+Change Curency display :
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/CurencyChange.gif?raw=true)
+
 Buy stocks : 
 ![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Buyfunction.gif?raw=true)
+
+sell function:
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/sellfunction.gif?raw=true)
+
+Info page:
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/infoPage.gif?raw=true)
+
+
