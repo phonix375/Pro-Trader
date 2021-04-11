@@ -38,3 +38,9 @@
 ## Screenshots : 
 First login page to enter the name and the starter cash :
 ![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture.PNG?raw=true)
+
+Main Dashbord after the first login :
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture1.PNG?raw=true)
+
+Buy stocks : 
+![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Buy function.gif?raw=true)
