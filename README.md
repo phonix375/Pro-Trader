@@ -34,6 +34,9 @@
 - Billie H.
 - Lucile T.
 
+## Link to a deployed application : 
+
+https://phonix375.github.io/Pro-Trader/
 
 ## Screenshots : 
 First login page to enter the name and the starter cash :
