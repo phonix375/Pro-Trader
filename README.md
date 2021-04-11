@@ -1,6 +1,7 @@
 # Pro-Trader
 
 ## Deployed App
+https://phonix375.github.io/Pro-Trader/
 
 ## User Story
 **AS** a user with great interest in learning Stock Exchange Trading,
@@ -33,10 +34,6 @@
 - Jeff G.
 - Billie H.
 - Lucile T.
-
-## Link to a deployed application : 
-
-https://phonix375.github.io/Pro-Trader/
 
 ## Screenshots : 
 First login page to enter the name and the starter cash :
