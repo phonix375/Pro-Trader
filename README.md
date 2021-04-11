@@ -35,7 +35,7 @@ https://phonix375.github.io/Pro-Trader/
 - Billie H.
 - Lucile T.
 
-## Screenshots : 
+## Screenshots
 First login page to enter the name and the starter cash :
 ![alt text](https://github.com/phonix375/Pro-Trader/blob/main/assets/images/Capture.PNG?raw=true)
 
